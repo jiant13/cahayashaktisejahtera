@@ -21,9 +21,17 @@ const schema = {
   url: SITE.url,
   slogan: SITE.motto,
   email: contact.email,
-  telephone: `+${contact.phone}`,
-  address: { '@type': 'PostalAddress', addressLocality: 'Jakarta', addressCountry: 'ID' },
+  telephone: `+${SITE.phone}`,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: `${SITE.address.street}, ${SITE.address.district}`,
+    addressLocality: SITE.address.city,
+    addressRegion: SITE.address.region,
+    postalCode: SITE.address.postalCode,
+    addressCountry: SITE.address.country,
+  },
   description: c.meta.description,
+  sameAs: [...SITE.sameAs],
 };
 ---
 

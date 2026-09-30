@@ -16,6 +16,21 @@ export const SITE = {
   url: 'https://cahayashaktisejahtera.com',
   legalName: 'PT Cahaya Shakti Sejahtera',
   motto: 'KUAT · AMAN · SEJAHTERA',
+  /** Profil resmi di luar situs. Dipakai sebagai `sameAs` di JSON-LD. */
+  sameAs: [
+    // Google Business Profile
+    'https://maps.app.goo.gl/McC1NZBrkii3idCY9',
+  ],
+  /** Alamat dan telepon mengikuti Google Business Profile, supaya NAP konsisten. */
+  address: {
+    street: 'Jl. Raya Jakarta-Bogor No.29, Mekarsari',
+    district: 'Kec. Cimanggis',
+    city: 'Kota Depok',
+    region: 'Jawa Barat',
+    postalCode: '16451',
+    country: 'ID',
+  },
+  phone: '6285923500089',
 } as const;
 
 /** Nomor disimpan dalam format internasional tanpa tanda baca, untuk tautan wa.me. */
@@ -29,7 +44,7 @@ export const CONTACT = {
     // Diasumsikan alamat surel. Perlu dipastikan ke klien.
     email: 'admin@cahayashaktisejahtera.com',
     emailFallback: 'ptcahayashakti@gmail.com',
-    address: 'Jakarta, Indonesia',
+    address: 'Jl. Raya Jakarta-Bogor No.29, Mekarsari, Kec. Cimanggis, Kota Depok, Jawa Barat 16451',
   },
   shrimp: {
     wa: '6285923500089',
