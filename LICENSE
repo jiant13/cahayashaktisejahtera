@@ -1,21 +1,38 @@
-MIT License
+Copyright (c) 2026 PT Cahaya Shakti Sejahtera. Hak cipta dilindungi.
 
-Copyright (c) 2026 jiant13
+Seluruh isi repositori ini, termasuk kode sumber, teks, logo, foto, dan video,
+adalah milik PT Cahaya Shakti Sejahtera, kecuali disebutkan lain di bawah.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Repositori ini dapat dilihat secara publik semata-mata untuk keperluan
+referensi. Tanpa izin tertulis dari PT Cahaya Shakti Sejahtera, Anda tidak
+diperkenankan menyalin, mengubah, menggabungkan, menerbitkan, mendistribusikan,
+mensublisensikan, menjual, atau memakai isi repositori ini, baik sebagian
+maupun seluruhnya, untuk tujuan apa pun.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Pengecualian: foto stok pada src/assets/photos/spa/ tunduk pada lisensi dari
+sumber aslinya, sebagaimana dicatat di src/assets/photos/spa/SUMBER-FOTO.md.
+Pustaka pihak ketiga yang diunduh lewat npm tunduk pada lisensinya masing-masing.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Permohonan izin: admin@cahayashaktisejahtera.com
+
+-------------------------------------------------------------------------------
+
+Copyright (c) 2026 PT Cahaya Shakti Sejahtera. All rights reserved.
+
+All contents of this repository, including source code, text, logos,
+photographs, and videos, are the property of PT Cahaya Shakti Sejahtera,
+except where noted below.
+
+This repository is publicly visible for reference purposes only. Without
+prior written permission from PT Cahaya Shakti Sejahtera, you may not copy,
+modify, merge, publish, distribute, sublicense, sell, or otherwise use any
+part of this repository, in whole or in part, for any purpose.
+
+Exceptions: stock photographs in src/assets/photos/spa/ are subject to the
+license of their original source, as recorded in
+src/assets/photos/spa/SUMBER-FOTO.md. Third-party packages installed via npm
+are subject to their own licenses.
+
+Permission requests: admin@cahayashaktisejahtera.com
+
+THE CONTENTS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
