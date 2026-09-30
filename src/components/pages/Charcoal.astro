@@ -1,0 +1,842 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { CONTACT, SITE, getBrand, waLink, type Locale } from '../../data/site';
+import { charcoal } from '../../data/pages/charcoal';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const c = charcoal(locale);
+const brand = getBrand('charcoal');
+const contact = CONTACT.charcoal;
+
+const files = import.meta.glob<{ default: ImageMetadata }>('../../assets/photos/charcoal/*.jpg', {
+  eager: true,
+});
+const photo = (name: string) => files[`../../assets/photos/charcoal/${name}.jpg`]!.default;
+
+// Satu-satunya penanda yang dipakai di teks konten adalah **tebal**, untuk
+// menonjolkan nama mitra. Diubah di sini supaya file konten tetap polos.
+const bold = (text: string) => text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: locale === 'id' ? 'Arang Batok Kelapa' : 'Coconut Shell Charcoal',
+  description: c.meta.description,
+  category: locale === 'id' ? 'Arang & Briket' : 'Charcoal & Briquettes',
+  countryOfOrigin: 'ID',
+  manufacturer: { '@type': 'Organization', name: 'PT Berkah Mandiri Indonesia' },
+  brand: { '@type': 'Organization', name: SITE.legalName },
+  additionalProperty: c.specs.rows.map(([k, v]) => ({
+    '@type': 'PropertyValue',
+    name: k,
+    value: v,
+  })),
+};
+---
+
+<Base
+  brand={brand}
+  locale={locale}
+  slug={brand.slug}
+  title={c.meta.title}
+  description={c.meta.description}
+  links={[...c.nav]}
+  contact={contact}
+  waMessage={c.waMessage}
+  schema={schema}
+>
+  <!-- HERO -->
+  <section class="hero" data-surface="deep">
+    <div class="hero-bg" aria-hidden="true">
+      <Image src={photo('tekstur-arang')} alt="" loading="eager" widths={[1400]} />
+    </div>
+    <div class="hero-ember" aria-hidden="true"></div>
+
+    <div class="shell hero-inner">
+      <div class="hero-text">
+        <p class="eyebrow" data-reveal>{c.hero.eyebrow}</p>
+        <h1 class="hero-title" data-reveal style="--reveal-delay:80ms">{c.hero.title}</h1>
+        <p class="hero-lead" data-reveal style="--reveal-delay:170ms">{c.hero.lead}</p>
+        <div class="hero-actions" data-reveal style="--reveal-delay:260ms">
+          <a class="btn btn-primary" href={waLink(contact.wa, c.waMessage)} target="_blank" rel="noopener">
+            {c.hero.cta}
+          </a>
+          <a class="btn btn-ghost" href="#spesifikasi">{c.hero.ctaSecond}</a>
+        </div>
+      </div>
+
+      <dl class="highlights" data-reveal style="--reveal-delay:340ms">
+        {
+          c.highlights.map((h) => (
+            <div class="highlight">
+              <dt class="highlight-value num">
+                {h.value}
+                <span class="highlight-unit">{h.unit}</span>
+              </dt>
+              <dd class="highlight-label">{h.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- PRODUK -->
+  <section id="produk" class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.products.eyebrow}</p>
+        <h2 class="section-title">{c.products.title}</h2>
+        <p class="section-lead">{c.products.lead}</p>
+      </div>
+
+      <div class="product-grid">
+        <article class="product" data-reveal>
+          <figure class="photo product-photo">
+            <Image src={photo('arang-flake')} alt={c.products.flake.name} widths={[620]} />
+          </figure>
+          <div class="product-body">
+            <p class="product-sub">{c.products.flake.sub}</p>
+            <h3 class="product-name">{c.products.flake.name}</h3>
+            <p class="prose">{c.products.flake.desc}</p>
+            <ul class="ticks">
+              {c.products.flake.points.map((p) => <li>{p}</li>)}
+            </ul>
+          </div>
+        </article>
+
+        <article class="product" data-reveal style="--reveal-delay:110ms">
+          <figure class="photo product-photo">
+            <Image src={photo('briket')} alt={c.products.briket.name} widths={[620]} />
+          </figure>
+          <div class="product-body">
+            <p class="product-sub">{c.products.briket.sub}</p>
+            <h3 class="product-name">{c.products.briket.name}</h3>
+            <p class="prose">{c.products.briket.desc}</p>
+
+            {
+              c.products.briket.specs.length > 0 ? (
+                <dl class="mini-specs">
+                  {c.products.briket.specs.map((s) => (
+                    <div>
+                      <dt>{s.k}</dt>
+                      <dd class="num">{s.v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : (
+                <p class="pending">{c.products.briket.pending}</p>
+              )
+            }
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPESIFIKASI -->
+  <section id="spesifikasi" class="section section-deep" data-surface="deep">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.specs.eyebrow}</p>
+        <h2 class="section-title">{c.specs.title}</h2>
+        <p class="section-lead">{c.specs.lead}</p>
+      </div>
+
+      <div class="spec-grid">
+        <div class="table-scroll" data-reveal>
+          <table class="spec-table">
+            <thead>
+              <tr>{c.specs.headers.map((h) => <th scope="col">{h}</th>)}</tr>
+            </thead>
+            <tbody>
+              {
+                c.specs.rows.map(([k, v]) => (
+                  <tr>
+                    <th scope="row">{k}</th>
+                    <td class="num">{v}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="spec-media" data-reveal>
+          <figure class="photo">
+            <Image src={photo('bara-besar')} alt={locale === 'id' ? 'Bara arang batok kelapa' : 'Glowing coconut shell charcoal'} widths={[620]} />
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PENGGUNAAN -->
+  <section id="penggunaan" class="section section-tint">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.uses.eyebrow}</p>
+        <h2 class="section-title">{c.uses.title}</h2>
+      </div>
+
+      <ul class="use-grid">
+        {
+          c.uses.items.map((u) => (
+            <li class="use" data-reveal data-reveal-group="guna">
+              <span class="use-name">{u.name}</span>
+              <span class="use-desc">{u.desc}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- PROSES -->
+  <section id="proses" class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.process.eyebrow}</p>
+        <h2 class="section-title">{c.process.title}</h2>
+      </div>
+
+      <ol class="steps">
+        {
+          c.process.steps.map((s, i) => (
+            <li class="step" data-reveal data-reveal-group="proses">
+              <span class="step-num num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="step-name">{s.name}</span>
+              <span class="step-desc">{s.desc}</span>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="process-media" data-reveal>
+        <figure class="photo">
+          <Image src={photo('pembakaran')} alt={locale === 'id' ? 'Proses pembakaran bahan baku' : 'Raw material burning process'} widths={[620]} />
+        </figure>
+        <figure class="photo">
+          <Image src={photo('tumpukan-arang')} alt={locale === 'id' ? 'Arang hasil karbonisasi' : 'Charcoal after carbonisation'} widths={[620]} />
+        </figure>
+        <figure class="photo">
+          <Image src={photo('gudang-karung')} alt={locale === 'id' ? 'Penyimpanan di gudang kering' : 'Storage in a dry warehouse'} widths={[620]} />
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- MITRA -->
+  <section id="mitra" class="section section-deep" data-surface="deep">
+    <div class="shell">
+      <div class="partner-grid">
+        <div data-reveal>
+          <p class="eyebrow">{c.partner.eyebrow}</p>
+          <h2 class="section-title">{c.partner.title}</h2>
+          {c.partner.body.map((p) => <p class="prose" set:html={bold(p)} />)}
+
+          <div class="markets">
+            <p class="markets-title">{c.partner.markets.title}</p>
+            <ul>
+              {c.partner.markets.items.map((m) => <li>{m}</li>)}
+            </ul>
+          </div>
+        </div>
+
+        <figure class="photo partner-photo" data-reveal>
+          <Image src={photo('tungku-pekerja')} alt={locale === 'id' ? 'Pekerja di area tungku karbonisasi' : 'Workers at the carbonisation kiln area'} widths={[620]} />
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- PENAWARAN -->
+  <section id="penawaran" class="section">
+    <div class="shell quote-grid">
+      <div data-reveal>
+        <p class="eyebrow">{c.quote.eyebrow}</p>
+        <h2 class="section-title">{c.quote.title}</h2>
+        <p class="section-lead">{c.quote.lead}</p>
+
+        <div class="quote-actions">
+          <a class="btn btn-primary" href={waLink(contact.wa, c.waMessage)} target="_blank" rel="noopener">
+            {c.quote.waCta} · {contact.waLabel}
+          </a>
+          <a class="btn btn-ghost" href={`mailto:${contact.email}`}>{c.quote.emailCta}</a>
+        </div>
+      </div>
+
+      <ol class="checklist" data-reveal>
+        {c.quote.checklist.map((item, i) => (
+          <li>
+            <span class="checklist-num num">{i + 1}</span>
+            {item}
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section section-tint">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.faq.eyebrow}</p>
+        <h2 class="section-title">{c.faq.title}</h2>
+      </div>
+
+      {/* <details> — accordion tanpa JavaScript sama sekali, dan sudah
+          bisa dioperasikan keyboard secara bawaan. */}
+      <div class="faq">
+        {
+          c.faq.items.map((item) => (
+            <details class="faq-item" data-reveal data-reveal-group="faq">
+              <summary>
+                <span>{item.q}</span>
+                <span class="faq-mark" aria-hidden="true" />
+              </summary>
+              <p>{item.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---------- HERO ---------- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    margin-top: -4.5rem;
+    padding-top: 4.5rem;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-bg :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.42) contrast(1.1) saturate(0.7);
+  }
+
+  /* Bara di sudut bawah — sumber cahaya hangat, bukan gradasi dekoratif. */
+  .hero-ember {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        ellipse 70% 55% at 82% 88%,
+        color-mix(in srgb, var(--color-accent) 30%, transparent),
+        transparent 70%
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--color-deep) 82%, transparent) 0%,
+        color-mix(in srgb, var(--color-deep) 55%, transparent) 45%,
+        color-mix(in srgb, var(--color-deep) 90%, transparent) 100%
+      );
+  }
+
+  .hero-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3.5rem;
+    min-height: calc(100svh - var(--frame-h) - 4.5rem);
+    padding-block: clamp(3rem, 8vw, 6rem);
+  }
+
+  .hero-text {
+    max-width: 44rem;
+  }
+
+  .hero-title {
+    margin-top: 1.1rem;
+    font-size: var(--text-hero);
+    line-height: var(--text-hero--line-height);
+  }
+
+  .hero-lead {
+    margin-top: 1.5rem;
+    max-width: 44ch;
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+    color: var(--color-on-deep-muted);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .highlights {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--color-line);
+    border: 1px solid var(--color-line);
+  }
+
+  .highlight {
+    padding: 1.35rem 1.25rem;
+    background: color-mix(in srgb, var(--color-deep) 72%, transparent);
+    backdrop-filter: blur(10px);
+  }
+
+  .highlight-value {
+    font-size: clamp(1.75rem, 1.35rem + 1.5vw, 2.4rem);
+    line-height: 1;
+    color: var(--color-on-deep);
+  }
+
+  .highlight-unit {
+    margin-left: 0.4rem;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .highlight-label {
+    margin-top: 0.55rem;
+    font-size: 0.8rem;
+    color: var(--color-on-deep-muted);
+  }
+
+  /* ---------- SECTION UMUM ---------- */
+  .section {
+    padding-block: clamp(4rem, 9vw, 7.5rem);
+  }
+
+  .section-deep {
+    background: var(--color-deep);
+  }
+
+  .section-tint {
+    background: color-mix(in srgb, var(--color-accent) 14%, var(--color-paper));
+  }
+
+  .section-head {
+    max-width: 46rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .section-title {
+    margin-top: 0.9rem;
+    font-size: var(--text-display);
+    line-height: var(--text-display--line-height);
+  }
+
+  .section-lead,
+  .prose {
+    margin-top: 1.25rem;
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+    color: var(--color-muted);
+  }
+
+  [data-surface='deep'] .section-lead,
+  [data-surface='deep'] .prose {
+    color: var(--color-on-deep-muted);
+  }
+
+  [data-surface='deep'] .prose :global(strong) {
+    color: var(--color-on-deep);
+    font-weight: 600;
+  }
+
+  /* ---------- PRODUK ---------- */
+  .product-grid {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .product {
+    border: 1px solid var(--color-line-soft);
+    background: var(--color-paper-2);
+  }
+
+  .product-photo {
+    aspect-ratio: 16 / 11;
+  }
+
+  .product-body {
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  .product-sub {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-second);
+  }
+
+  .product-name {
+    margin-top: 0.4rem;
+    font-size: var(--text-title);
+    line-height: var(--text-title--line-height);
+  }
+
+  .ticks {
+    display: grid;
+    gap: 0;
+    margin-top: 1.75rem;
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .ticks li {
+    padding-block: 0.8rem;
+    padding-left: 1.4rem;
+    position: relative;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    border-bottom: 1px solid var(--color-line-soft);
+    color: var(--color-ink);
+  }
+
+  .ticks li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 1.2rem;
+    width: 6px;
+    height: 6px;
+    background: var(--color-accent);
+    transform: rotate(45deg);
+  }
+
+  /* Nada berbeda dari teks biasa: ini janji kirim data, bukan data. */
+  .pending {
+    margin-top: 1.75rem;
+    padding: 1.1rem 1.25rem;
+    border-left: 2px solid var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--color-muted);
+  }
+
+  .mini-specs {
+    margin-top: 1.75rem;
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .mini-specs > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.8rem;
+    border-bottom: 1px solid var(--color-line-soft);
+    font-size: 0.88rem;
+  }
+
+  .mini-specs dt {
+    color: var(--color-muted);
+  }
+
+  /* ---------- SPESIFIKASI ---------- */
+  .spec-grid {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  .spec-table th,
+  .spec-table td {
+    text-align: left;
+    padding: 1rem 1rem 1rem 0;
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .spec-table thead th {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    border-bottom-color: var(--color-line);
+  }
+
+  .spec-table tbody th {
+    font-weight: 400;
+    color: var(--color-on-deep-muted);
+  }
+
+  .spec-table td {
+    text-align: right;
+    white-space: nowrap;
+    color: var(--color-on-deep);
+  }
+
+  .spec-media .photo {
+    aspect-ratio: 4 / 3;
+    height: 100%;
+  }
+
+  /* ---------- PENGGUNAAN ---------- */
+  .use-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1px;
+    background: var(--color-line-soft);
+    border: 1px solid var(--color-line-soft);
+  }
+
+  .use {
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+    padding: 1.65rem 1.4rem;
+    background: var(--color-paper-2);
+  }
+
+  .use-name {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--color-ink);
+  }
+
+  .use-desc {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+  }
+
+  /* ---------- PROSES ---------- */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 1px;
+    background: var(--color-line-soft);
+    border: 1px solid var(--color-line-soft);
+  }
+
+  .step {
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+    padding: 1.5rem 1.25rem;
+    background: var(--color-paper);
+  }
+
+  .step-num {
+    font-size: 1.5rem;
+    color: var(--color-accent);
+  }
+
+  .step-name {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--color-ink);
+  }
+
+  .step-desc {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+  }
+
+  .process-media {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+
+  .process-media .photo {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* ---------- MITRA ---------- */
+  .partner-grid {
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .partner-photo {
+    aspect-ratio: 4 / 3;
+  }
+
+  .markets {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .markets-title {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+  }
+
+  .markets ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .markets li {
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    color: var(--color-on-deep);
+  }
+
+  /* ---------- PENAWARAN ---------- */
+  .quote-grid {
+    display: grid;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .quote-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .checklist {
+    display: grid;
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding-block: 1.1rem;
+    border-bottom: 1px solid var(--color-line-soft);
+    font-size: 0.98rem;
+    color: var(--color-ink);
+  }
+
+  .checklist-num {
+    flex: none;
+    font-size: 0.95rem;
+    color: var(--color-accent);
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq {
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.35rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--color-ink);
+  }
+
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-mark {
+    flex: none;
+    position: relative;
+    width: 14px;
+    height: 14px;
+  }
+
+  .faq-mark::before,
+  .faq-mark::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto 0;
+    height: 1.5px;
+    background: var(--color-accent);
+    transition: transform 0.3s var(--ease-out-soft);
+  }
+
+  .faq-mark::after {
+    transform: rotate(90deg);
+  }
+
+  .faq-item[open] .faq-mark::after {
+    transform: rotate(0deg);
+  }
+
+  .faq-item p {
+    padding-bottom: 1.5rem;
+    max-width: 62ch;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+  }
+
+  /* ---------- RESPONSIF ---------- */
+  @media (min-width: 760px) {
+    .hero-inner {
+      gap: 4rem;
+    }
+
+    .highlights {
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 54rem;
+    }
+
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .spec-grid {
+      grid-template-columns: 1.25fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .process-media {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .partner-grid {
+      grid-template-columns: 1.25fr 1fr;
+      gap: 4rem;
+    }
+
+    .quote-grid {
+      grid-template-columns: 1.15fr 1fr;
+      gap: 4rem;
+    }
+  }
+</style>

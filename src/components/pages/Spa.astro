@@ -1,0 +1,891 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { CONTACT, SITE, getBrand, localePath, waLink, type Locale } from '../../data/site';
+import { spa } from '../../data/pages/spa';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const c = spa(locale);
+const brand = getBrand('spa');
+const contact = CONTACT.spa;
+
+const files = import.meta.glob<{ default: ImageMetadata }>('../../assets/photos/spa/*.jpg', {
+  eager: true,
+});
+const photo = (name: string) => files[`../../assets/photos/spa/${name}.jpg`]!.default;
+
+// Tiap cabang jadi entri LocalBusiness sendiri supaya muncul di pencarian lokal.
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': c.locations.items.map((loc) => ({
+    '@type': 'HealthAndBeautyBusiness',
+    name: `${brand.name[locale]} — ${loc.name}`,
+    parentOrganization: { '@type': 'Organization', name: SITE.legalName },
+    url: new URL(localePath(locale, brand.slug), SITE.url).href,
+    telephone: `+${contact.wa}`,
+    address: { '@type': 'PostalAddress', streetAddress: loc.address, addressCountry: 'ID' },
+    openingHours: 'Mo-Su 09:00-20:00',
+    priceRange: 'Rp99.000 – Rp169.000',
+    description: c.meta.description,
+  })),
+};
+---
+
+<Base
+  brand={brand}
+  locale={locale}
+  slug={brand.slug}
+  title={c.meta.title}
+  description={c.meta.description}
+  links={[...c.nav]}
+  contact={{ ...contact, hours: '09.00 – 20.00' }}
+  waMessage={c.waMessage}
+  schema={schema}
+>
+  <!-- HERO -->
+  <section class="hero" data-surface="deep">
+    <div class="shell hero-inner">
+      <div class="hero-text">
+        <p class="eyebrow" data-reveal>{c.hero.eyebrow}</p>
+        <h1 class="hero-title" data-reveal style="--reveal-delay:80ms">{c.hero.title}</h1>
+        <p class="hero-lead" data-reveal style="--reveal-delay:170ms">{c.hero.lead}</p>
+        <div class="hero-actions" data-reveal style="--reveal-delay:260ms">
+          <a class="btn btn-primary" href={waLink(contact.wa, c.waMessage)} target="_blank" rel="noopener">
+            {c.hero.cta}
+          </a>
+          <a class="btn btn-ghost" href="#harga">{c.hero.ctaSecond}</a>
+        </div>
+        <p class="hero-hours" data-reveal style="--reveal-delay:340ms">{c.booking.hours}</p>
+      </div>
+
+      <div class="hero-media" data-reveal style="--reveal-delay:200ms">
+        <figure class="soft-photo hero-photo">
+          <Image src={photo('hero')} alt="" loading="eager" widths={[760]} />
+        </figure>
+        <figure class="soft-photo hero-photo-2">
+          <Image src={photo('perlengkapan')} alt="" widths={[360]} />
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMO -->
+  <section class="promo">
+    <div class="shell promo-inner">
+      <div class="promo-main" data-reveal>
+        <span class="promo-badge">{c.promo.badge}</span>
+        <p class="promo-title">{c.promo.title}</p>
+        <p class="promo-sub">{c.promo.sub}</p>
+        <p class="promo-second">+ {c.promo.second}</p>
+      </div>
+      <div class="promo-terms" data-reveal style="--reveal-delay:110ms">
+        <p class="promo-terms-title">{c.promo.terms}</p>
+        <ul>
+          {c.promo.termsList.map((t) => <li>{t}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- LAYANAN -->
+  <section id="layanan" class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.services.eyebrow}</p>
+        <h2 class="section-title">{c.services.title}</h2>
+        <p class="section-lead">{c.services.lead}</p>
+      </div>
+
+      <div class="service-layout">
+        <ul class="service-grid">
+          {
+            c.services.items.map((s) => (
+              <li class="service" data-reveal data-reveal-group="layanan">
+                <span class="service-name">{s.name}</span>
+                <span class="service-desc">{s.desc}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="service-media" data-reveal>
+          <figure class="soft-photo">
+            <Image src={photo('refleksi-kaki')} alt={locale === 'id' ? 'Perawatan refleksi kaki' : 'Foot reflexology treatment'} widths={[420]} />
+          </figure>
+          <figure class="soft-photo">
+            <Image src={photo('totok-wajah')} alt={locale === 'id' ? 'Perawatan totok wajah' : 'Facial acupressure treatment'} widths={[420]} />
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HARGA -->
+  <section id="harga" class="section section-tint">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.pricing.eyebrow}</p>
+        <h2 class="section-title">{c.pricing.title}</h2>
+        <p class="section-lead">{c.pricing.lead}</p>
+      </div>
+
+      <div class="price-grid">
+        {
+          c.pricing.packages.map((p) => (
+            <article class="price" data-reveal data-reveal-group="harga">
+              <header class="price-head">
+                <h3 class="price-name">{p.name}</h3>
+                <p class="price-duration num">
+                  {p.minutes}
+                  <span> {locale === 'id' ? 'menit' : 'min'}</span>
+                </p>
+              </header>
+
+              <p class="price-pick">{c.pricing.pickOne}</p>
+              <ul class="price-options">
+                {p.options.map((o) => <li>{o}</li>)}
+              </ul>
+
+              <div class="price-amounts">
+                <span class="price-normal num">{p.normal}</span>
+                <span class="price-promo num">
+                  {p.promo}
+                  <span class="price-unit">rb</span>
+                </span>
+              </div>
+
+              <a
+                class="btn btn-primary price-cta"
+                href={waLink(contact.wa, c.waMessagePackage.replace('{paket}', p.name))}
+                target="_blank"
+                rel="noopener"
+              >
+                {c.pricing.book}
+              </a>
+            </article>
+          ))
+        }
+      </div>
+
+      <p class="note" data-reveal>{c.pricing.currencyNote}</p>
+    </div>
+  </section>
+
+  <!-- CARA KERJA -->
+  <section id="cara" class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.how.eyebrow}</p>
+        <h2 class="section-title">{c.how.title}</h2>
+      </div>
+
+      <ol class="how-steps">
+        {
+          c.how.steps.map((s, i) => (
+            <li class="how-step" data-reveal data-reveal-group="cara">
+              <span class="how-num num">{i + 1}</span>
+              <span class="how-name">{s.name}</span>
+              <span class="how-desc">{s.desc}</span>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="how-bottom">
+        <ul class="how-points" data-reveal>
+          {
+            c.how.points.map((p) => (
+              <li>
+                <span class="how-point-name">{p.name}</span>
+                <span class="how-point-desc">{p.desc}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <figure class="soft-photo how-photo" data-reveal>
+          <Image src={photo('pijat-punggung')} alt={locale === 'id' ? 'Terapis melakukan pijat punggung' : 'Therapist performing a back massage'} widths={[480]} />
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOKASI -->
+  <section id="lokasi" class="section section-deep" data-surface="deep">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.locations.eyebrow}</p>
+        <h2 class="section-title">{c.locations.title}</h2>
+        <p class="section-lead">{c.locations.lead}</p>
+      </div>
+
+      <ul class="location-grid">
+        {
+          c.locations.items.map((loc) => (
+            <li class="location" data-reveal data-reveal-group="lokasi">
+              <span class="location-label">{loc.label}</span>
+              <span class="location-name">{loc.name}</span>
+              <span class="location-address">{loc.address}</span>
+              <a
+                class="location-map"
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc.address)}`}
+                target="_blank"
+                rel="noopener"
+              >
+                {locale === 'id' ? 'Buka di peta' : 'Open in maps'}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.faq.eyebrow}</p>
+        <h2 class="section-title">{c.faq.title}</h2>
+      </div>
+
+      <div class="faq">
+        {
+          c.faq.items.map((item) => (
+            <details class="faq-item" data-reveal data-reveal-group="faq">
+              <summary>
+                <span>{item.q}</span>
+                <span class="faq-mark" aria-hidden="true" />
+              </summary>
+              <p>{item.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- RESERVASI -->
+  <section id="reservasi" class="section section-tint">
+    <div class="shell booking">
+      <figure class="soft-photo booking-photo" data-reveal>
+        <Image src={photo('minyak')} alt="" widths={[420]} />
+      </figure>
+
+      <div data-reveal style="--reveal-delay:110ms">
+        <p class="eyebrow">{c.booking.eyebrow}</p>
+        <h2 class="section-title">{c.booking.title}</h2>
+        <p class="section-lead">{c.booking.lead}</p>
+        <div class="booking-actions">
+          <a class="btn btn-primary" href={waLink(contact.wa, c.waMessage)} target="_blank" rel="noopener">
+            {c.booking.waCta} · {contact.waLabel}
+          </a>
+        </div>
+        <p class="booking-hours">{c.booking.hours}</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* Halaman ini memakai sudut membulat, berbeda dari dua halaman lain yang
+     bersudut tajam. Ini pembeda utama nada femininnya. */
+  .soft-photo {
+    overflow: hidden;
+    border-radius: 20px;
+    background: var(--color-deep-2);
+  }
+
+  .soft-photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    margin-top: -4.5rem;
+    padding-top: 4.5rem;
+    background:
+      radial-gradient(
+        ellipse 60% 50% at 85% 20%,
+        color-mix(in srgb, var(--color-accent) 22%, transparent),
+        transparent 70%
+      ),
+      var(--color-deep);
+  }
+
+  .hero-inner {
+    display: grid;
+    align-content: center;
+    gap: 3rem;
+    min-height: calc(100svh - var(--frame-h) - 4.5rem);
+    padding-block: clamp(3rem, 7vw, 5rem);
+  }
+
+  .hero-title {
+    margin-top: 1.1rem;
+    font-size: var(--text-hero);
+    line-height: var(--text-hero--line-height);
+  }
+
+  .hero-lead {
+    margin-top: 1.5rem;
+    max-width: 44ch;
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+    color: var(--color-on-deep-muted);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .hero-hours {
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--color-on-deep-muted);
+  }
+
+  .hero-media {
+    position: relative;
+  }
+
+  .hero-photo {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* Foto kecil menimpa sudut foto besar — susunan yang lebih santai,
+     bukan grid kaku seperti halaman ekspor. */
+  .hero-photo-2 {
+    display: none;
+    position: absolute;
+    right: -1.25rem;
+    bottom: -2rem;
+    width: 42%;
+    aspect-ratio: 1;
+    border: 6px solid var(--color-deep);
+    border-radius: 24px;
+  }
+
+  /* ---------- PROMO ---------- */
+  .promo {
+    background: var(--color-accent);
+    color: var(--color-deep);
+    padding-block: clamp(2.5rem, 5vw, 3.5rem);
+  }
+
+  .promo-inner {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .promo-badge {
+    display: inline-block;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-deep) 14%, transparent);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .promo-title {
+    margin-top: 1rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.65rem, 1.2rem + 1.9vw, 2.5rem);
+    line-height: 1.15;
+  }
+
+  .promo-sub {
+    margin-top: 0.4rem;
+    font-size: 0.95rem;
+    opacity: 0.75;
+  }
+
+  .promo-second {
+    margin-top: 0.9rem;
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+  }
+
+  .promo-terms-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 0.75rem;
+  }
+
+  .promo-terms li {
+    padding-left: 1.1rem;
+    position: relative;
+    padding-block: 0.3rem;
+    font-size: 0.87rem;
+    line-height: 1.5;
+  }
+
+  .promo-terms li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.85rem;
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  /* ---------- SECTION UMUM ---------- */
+  .section {
+    padding-block: clamp(4rem, 9vw, 7.5rem);
+  }
+
+  .section-deep {
+    background: var(--color-deep);
+  }
+
+  .section-tint {
+    background: color-mix(in srgb, var(--color-accent) 16%, var(--color-paper));
+  }
+
+  .section-head {
+    max-width: 46rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .section-title {
+    margin-top: 0.9rem;
+    font-size: var(--text-display);
+    line-height: var(--text-display--line-height);
+  }
+
+  .section-lead {
+    margin-top: 1.25rem;
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+    color: var(--color-muted);
+  }
+
+  [data-surface='deep'] .section-lead {
+    color: var(--color-on-deep-muted);
+  }
+
+  .note {
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+
+  /* ---------- LAYANAN ---------- */
+  .service-layout {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .service-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .service {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1.4rem 1.5rem;
+    background: var(--color-paper-2);
+    border: 1px solid var(--color-line-soft);
+    border-radius: 16px;
+  }
+
+  .service-name {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--color-ink);
+  }
+
+  .service-desc {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+  }
+
+  .service-media {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+  }
+
+  .service-media .soft-photo {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* ---------- HARGA ---------- */
+  .price-grid {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .price {
+    display: flex;
+    flex-direction: column;
+    padding: 1.75rem;
+    background: var(--color-paper-2);
+    border: 1px solid var(--color-line-soft);
+    border-radius: 20px;
+  }
+
+  .price-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .price-name {
+    font-size: 1.5rem;
+  }
+
+  .price-duration {
+    font-size: 1.1rem;
+    color: var(--color-muted);
+  }
+
+  .price-duration span {
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+  }
+
+  .price-pick {
+    margin-top: 1.25rem;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-second);
+  }
+
+  .price-options {
+    margin-top: 0.75rem;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .price-options li {
+    position: relative;
+    padding-left: 1.1rem;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--color-ink);
+  }
+
+  .price-options li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6rem;
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--color-accent);
+  }
+
+  .price-amounts {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 1.5rem;
+  }
+
+  .price-normal {
+    font-size: 1.1rem;
+    color: var(--color-muted);
+    text-decoration: line-through;
+  }
+
+  .price-promo {
+    font-size: 2.4rem;
+    line-height: 1;
+    color: var(--color-ink);
+  }
+
+  .price-unit {
+    margin-left: 0.15rem;
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-muted);
+  }
+
+  .price-cta {
+    margin-top: 1.25rem;
+    width: 100%;
+  }
+
+  /* ---------- CARA KERJA ---------- */
+  .how-steps {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .how-step {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    padding: 1.75rem;
+    background: var(--color-paper-2);
+    border: 1px solid var(--color-line-soft);
+    border-radius: 20px;
+  }
+
+  .how-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-accent) 24%, transparent);
+    color: var(--color-ink);
+    font-size: 1.05rem;
+  }
+
+  .how-name {
+    margin-top: 0.5rem;
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--color-ink);
+  }
+
+  .how-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+
+  .how-bottom {
+    display: grid;
+    gap: 2.5rem;
+    margin-top: 3rem;
+    align-items: center;
+  }
+
+  .how-points {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .how-points li {
+    display: grid;
+    gap: 0.25rem;
+    padding-block: 1.15rem;
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .how-point-name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-ink);
+  }
+
+  .how-point-desc {
+    font-size: 0.88rem;
+    color: var(--color-muted);
+  }
+
+  .how-photo {
+    aspect-ratio: 3 / 4;
+  }
+
+  /* ---------- LOKASI ---------- */
+  .location-grid {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .location {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    padding: 1.75rem;
+    border: 1px solid var(--color-line);
+    border-radius: 20px;
+  }
+
+  .location-label {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .location-name {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--color-on-deep);
+  }
+
+  .location-address {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--color-on-deep-muted);
+  }
+
+  .location-map {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq {
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.35rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--color-ink);
+  }
+
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-mark {
+    flex: none;
+    position: relative;
+    width: 14px;
+    height: 14px;
+  }
+
+  .faq-mark::before,
+  .faq-mark::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto 0;
+    height: 1.5px;
+    background: var(--color-accent);
+    transition: transform 0.3s var(--ease-out-soft);
+  }
+
+  .faq-mark::after {
+    transform: rotate(90deg);
+  }
+
+  .faq-item[open] .faq-mark::after {
+    transform: rotate(0deg);
+  }
+
+  .faq-item p {
+    padding-bottom: 1.5rem;
+    max-width: 62ch;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+  }
+
+  /* ---------- RESERVASI ---------- */
+  .booking {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .booking-photo {
+    aspect-ratio: 3 / 4;
+    max-height: 26rem;
+  }
+
+  .booking-actions {
+    margin-top: 2rem;
+  }
+
+  .booking-hours {
+    margin-top: 1.25rem;
+    font-size: 0.87rem;
+    color: var(--color-muted);
+  }
+
+  /* ---------- RESPONSIF ---------- */
+  @media (min-width: 760px) {
+    .hero-inner {
+      grid-template-columns: 1.05fr 1fr;
+      align-items: center;
+      gap: 4rem;
+    }
+
+    .hero-photo-2 {
+      display: block;
+    }
+
+    .promo-inner {
+      grid-template-columns: 1.4fr 1fr;
+      gap: 3.5rem;
+    }
+
+    .service-layout {
+      grid-template-columns: 1.3fr 1fr;
+      gap: 3.5rem;
+    }
+
+    .service-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .price-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .how-steps {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .how-bottom {
+      grid-template-columns: 1.4fr 1fr;
+    }
+
+    .location-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .booking {
+      grid-template-columns: 1fr 1.5fr;
+      gap: 4rem;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .price-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

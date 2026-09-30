@@ -1,0 +1,464 @@
+---
+import Base from '../../layouts/Base.astro';
+import Logo from '../Logo.astro';
+import { BRANDS, CONTACT, SITE, getBrand, localePath, waLink, type Locale } from '../../data/site';
+import { induk } from '../../data/pages/induk';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const c = induk(locale);
+const brand = getBrand('induk');
+const contact = CONTACT.induk;
+const divisions = BRANDS.filter((b) => b.key !== 'induk');
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE.legalName,
+  url: SITE.url,
+  slogan: SITE.motto,
+  email: contact.email,
+  telephone: `+${contact.phone}`,
+  address: { '@type': 'PostalAddress', addressLocality: 'Jakarta', addressCountry: 'ID' },
+  description: c.meta.description,
+};
+---
+
+<Base
+  brand={brand}
+  locale={locale}
+  slug=""
+  title={c.meta.title}
+  description={c.meta.description}
+  links={[...c.nav]}
+  contact={contact}
+  waMessage={c.waMessage}
+  schema={schema}
+>
+  <!-- HERO -->
+  <section class="hero" data-surface="deep">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="shell hero-inner">
+      <Logo variant="lockup" height={72} title={SITE.legalName} class="hero-logo" />
+      <p class="hero-motto">{SITE.motto}</p>
+      <h1 class="hero-title" data-reveal>{c.hero.title}</h1>
+      <p class="hero-lead" data-reveal style="--reveal-delay:120ms">{c.hero.lead}</p>
+      <div class="hero-actions" data-reveal style="--reveal-delay:240ms">
+        <a class="btn btn-primary" href="#divisi">{c.hero.cta}</a>
+        <a class="btn btn-ghost" href="#kontak">{c.hero.ctaContact}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TENTANG -->
+  <section id="tentang" class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.about.eyebrow}</p>
+        <h2 class="section-title">{c.about.title}</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-body" data-reveal>
+          {c.about.body.map((p) => <p>{p}</p>)}
+        </div>
+        <dl class="stats" data-reveal>
+          {
+            c.about.stats.map((s) => (
+              <div class="stat">
+                <dt class="stat-value">
+                  {s.value}
+                  <span class="stat-unit">{s.unit}</span>
+                </dt>
+                <dd class="stat-label">{s.label}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVISI -->
+  <section id="divisi" class="section section-deep" data-surface="deep">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.divisions.eyebrow}</p>
+        <h2 class="section-title">{c.divisions.title}</h2>
+        <p class="section-lead">{c.divisions.lead}</p>
+      </div>
+
+      <div class="division-grid">
+        {
+          divisions.map((d) => (
+            <a class="division" href={localePath(locale, d.slug)} data-brand={d.theme} data-reveal data-reveal-group="divisi">
+              <span class="division-mark">
+                <Logo variant="mark" height={40} />
+              </span>
+              <span class="division-body">
+                <span class="division-short">{d.short[locale]}</span>
+                <span class="division-name">{d.name[locale]}</span>
+                <span class="division-tagline">{d.tagline[locale]}</span>
+              </span>
+              <span class="division-cta">
+                {c.divisions.cta}
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- LEGALITAS -->
+  <section id="legalitas" class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.legality.eyebrow}</p>
+        <h2 class="section-title">{c.legality.title}</h2>
+        <p class="section-lead">{c.legality.lead}</p>
+      </div>
+      <ul class="legal-grid">
+        {
+          c.legality.items.map((item) => (
+            <li class="legal-item" data-reveal data-reveal-group="legal">
+              <span class="legal-name">{item.name}</span>
+              <span class="legal-desc">{item.desc}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- KONTAK -->
+  <section id="kontak" class="section section-contact" data-surface="deep">
+    <div class="shell contact-inner">
+      <div data-reveal>
+        <p class="eyebrow">{c.contact.eyebrow}</p>
+        <h2 class="section-title">{c.contact.title}</h2>
+        <p class="section-lead">{c.contact.lead}</p>
+      </div>
+      <div class="contact-actions" data-reveal style="--reveal-delay:120ms">
+        <a
+          class="btn btn-primary"
+          href={waLink(contact.wa, c.waMessage)}
+          target="_blank"
+          rel="noopener"
+        >
+          {c.contact.waCta} · {contact.waLabel}
+        </a>
+        <a class="btn btn-ghost" href={`mailto:${contact.email}`}>
+          {c.contact.emailCta}
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* --- Hero --- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    /* Nav sticky transparan menumpang di atas hero, jadi tinggi nav ditambahkan
+       kembali lewat margin negatif agar hero benar-benar mulai dari atas layar. */
+    margin-top: -4.5rem;
+    padding-top: 4.5rem;
+  }
+
+  .hero-glow {
+    position: absolute;
+    inset-inline: -20%;
+    top: -35%;
+    height: 80%;
+    background: radial-gradient(
+      ellipse at 50% 50%,
+      color-mix(in srgb, var(--color-accent) 20%, transparent),
+      transparent 65%
+    );
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-block: clamp(4rem, 10vw, 8rem);
+    /* Setinggi layar dikurangi bilah bingkai dan tinggi nav yang ditumpangi,
+       jadi hero benar-benar penuh tanpa menempel ke tepi atas. */
+    min-height: calc(100svh - var(--frame-h) - 4.5rem);
+    justify-content: center;
+  }
+
+  .hero-logo {
+    color: var(--logo-on-deep);
+  }
+
+  .hero-motto {
+    margin-top: 1.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.32em;
+    color: var(--color-accent);
+  }
+
+  .hero-title {
+    margin-top: 2rem;
+    max-width: 18ch;
+    font-size: var(--text-hero);
+    line-height: var(--text-hero--line-height);
+  }
+
+  .hero-lead {
+    margin-top: 1.75rem;
+    max-width: 58ch;
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+    color: var(--color-on-deep-muted);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+  }
+
+  /* --- Section umum --- */
+  .section {
+    padding-block: clamp(4rem, 9vw, 7.5rem);
+  }
+
+  .section-deep,
+  .section-contact {
+    background: var(--color-deep);
+  }
+
+  .section-head {
+    max-width: 46rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .section-title {
+    margin-top: 0.9rem;
+    font-size: var(--text-display);
+    line-height: var(--text-display--line-height);
+  }
+
+  .section-lead {
+    margin-top: 1.25rem;
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+    color: var(--color-muted);
+  }
+
+  [data-surface='deep'] .section-lead {
+    color: var(--color-on-deep-muted);
+  }
+
+  /* --- Tentang --- */
+  .about-grid {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .about-body p {
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+    color: var(--color-muted);
+  }
+
+  .about-body p + p {
+    margin-top: 1.25rem;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    align-content: start;
+  }
+
+  .stat {
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--color-line);
+  }
+
+  .stat-value {
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums lining-nums;
+    font-weight: 300;
+    letter-spacing: -0.025em;
+    font-size: clamp(2.25rem, 1.6rem + 2.2vw, 3.25rem);
+    line-height: 1;
+    color: var(--color-ink);
+  }
+
+  .stat-unit {
+    display: block;
+    margin-top: 0.35rem;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .stat-label {
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+
+  /* --- Divisi --- */
+  .division-grid {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  /* Tiap kartu memakai palet divisinya sendiri — pratinjau kecil dari
+     halaman yang akan dibuka. */
+  .division {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    padding: 2rem;
+    background: var(--color-deep-2);
+    border: 1px solid var(--color-line);
+    color: var(--color-on-deep);
+    transition:
+      transform 0.4s var(--ease-out-soft),
+      border-color 0.4s var(--ease-out-soft),
+      background-color 0.4s var(--ease-out-soft);
+  }
+
+  .division:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-accent);
+    background: var(--color-deep-3);
+  }
+
+  .division-mark {
+    color: var(--logo-on-deep);
+    opacity: 0.9;
+  }
+
+  .division-body {
+    display: block;
+    margin-top: auto;
+  }
+
+  .division-short {
+    display: block;
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .division-name {
+    display: block;
+    margin-top: 0.75rem;
+    font-family: var(--font-display);
+    font-size: var(--text-title);
+    line-height: var(--text-title--line-height);
+  }
+
+  .division-tagline {
+    display: block;
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--color-on-deep-muted);
+  }
+
+  .division-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--color-accent);
+  }
+
+  .division:hover .division-cta svg {
+    transform: translateX(4px);
+  }
+
+  .division-cta svg {
+    transition: transform 0.3s var(--ease-out-soft);
+  }
+
+  /* --- Legalitas --- */
+  .legal-grid {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .legal-item {
+    display: grid;
+    gap: 0.35rem;
+    padding-block: 1.35rem;
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .legal-name {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    color: var(--color-ink);
+  }
+
+  .legal-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+
+  /* --- Kontak --- */
+  .contact-inner {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-content: start;
+  }
+
+  @media (min-width: 760px) {
+    .about-grid {
+      grid-template-columns: 1.15fr 1fr;
+      gap: 4rem;
+    }
+
+    .division-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .division {
+      min-height: 24rem;
+    }
+
+    .legal-item {
+      grid-template-columns: 12rem 1fr;
+      gap: 2rem;
+      align-items: baseline;
+    }
+
+    .contact-inner {
+      grid-template-columns: 1.3fr 1fr;
+      align-items: center;
+    }
+  }
+</style>

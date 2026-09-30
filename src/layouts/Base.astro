@@ -1,0 +1,116 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { SITE, LOCALES, localePath, waLink, type Brand, type Locale } from '../data/site';
+
+interface Props {
+  brand: Brand;
+  locale: Locale;
+  slug: string;
+  title: string;
+  description: string;
+  links: { label: string; href: string }[];
+  contact: {
+    wa: string;
+    waLabel: string;
+    email: string;
+    phoneLabel?: string;
+    address?: string;
+    hours?: string;
+  };
+  /** Pesan WhatsApp yang sudah terisi, berbeda tiap halaman dan bahasa. */
+  waMessage: string;
+  /** JSON-LD terstruktur, berbeda tiap halaman. */
+  schema?: Record<string, unknown>;
+}
+
+const { brand, locale, slug, title, description, links, contact, waMessage, schema } = Astro.props;
+
+const canonical = new URL(localePath(locale, slug), SITE.url).href;
+const waHref = waLink(contact.wa, waMessage);
+---
+
+<!doctype html>
+<html lang={locale === 'id' ? 'id-ID' : 'en-US'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <link rel="icon" type="image/png" href={brand.favicon} />
+    <link rel="apple-touch-icon" href={brand.favicon} />
+
+    {
+      LOCALES.map((l) => (
+        <link rel="alternate" hreflang={l} href={new URL(localePath(l, slug), SITE.url).href} />
+      ))
+    }
+    <link rel="alternate" hreflang="x-default" href={new URL(localePath('id', slug), SITE.url).href} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.legalName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={locale === 'id' ? 'id_ID' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#0b1a2e" />
+
+    {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+
+    {/* Dipasang sebelum render supaya tidak ada kedipan konten. Tanpa JavaScript
+        kelas ini tidak pernah ada, dan elemen reveal tampil biasa. */}
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+
+  <body data-brand={brand.theme}>
+    <Nav brand={brand} locale={locale} links={links} waHref={waHref} slug={slug} />
+
+    <main id="konten">
+      <slot />
+    </main>
+
+    <Footer brand={brand} locale={locale} contact={contact} waMessage={waMessage} />
+
+    <script>
+      const targets = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (reduced || !('IntersectionObserver' in window)) {
+        targets.forEach((el) => el.classList.add('is-revealed'));
+      } else {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              entry.target.classList.add('is-revealed');
+              observer.unobserve(entry.target);
+            }
+          },
+          { rootMargin: '0px 0px -12% 0px', threshold: 0.08 }
+        );
+
+        // Jeda bertahap dihitung per grup, supaya kartu bersaudara muncul
+        // berurutan alih-alih serentak. Elemen tanpa grup muncul tanpa jeda.
+        const seen = new Map<string, number>();
+
+        targets.forEach((el) => {
+          const group = el.dataset.revealGroup;
+          if (group) {
+            const position = seen.get(group) ?? 0;
+            seen.set(group, position + 1);
+            el.style.setProperty('--reveal-delay', `${Math.min(position, 7) * 90}ms`);
+          }
+          observer.observe(el);
+        });
+      }
+    </script>
+  </body>
+</html>

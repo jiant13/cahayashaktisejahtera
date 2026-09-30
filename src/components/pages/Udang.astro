@@ -1,0 +1,1005 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { CONTACT, SITE, getBrand, localePath, waLink, type Locale } from '../../data/site';
+import { udang } from '../../data/pages/udang';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const c = udang(locale);
+const brand = getBrand('shrimp');
+const contact = CONTACT.shrimp;
+
+// Foto dimuat lewat glob supaya bisa dirujuk dengan nama dari file konten,
+// sambil tetap melewati pipeline optimasi astro:assets.
+const files = import.meta.glob<{ default: ImageMetadata }>('../../assets/photos/udang/*.jpg', {
+  eager: true,
+});
+const photo = (name: string) => files[`../../assets/photos/udang/${name}.jpg`]!.default;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Udang Balap ID',
+  parentOrganization: { '@type': 'Organization', name: SITE.legalName },
+  url: new URL(localePath(locale, brand.slug), SITE.url).href,
+  telephone: `+${contact.wa}`,
+  email: contact.email,
+  description: c.meta.description,
+  makesOffer: c.products.items.map((p) => ({
+    '@type': 'Offer',
+    itemOffered: { '@type': 'Product', name: `${p.name} Shrimp`, description: p.desc },
+  })),
+};
+---
+
+<Base
+  brand={brand}
+  locale={locale}
+  slug={brand.slug}
+  title={c.meta.title}
+  description={c.meta.description}
+  links={[...c.nav]}
+  contact={contact}
+  waMessage={c.waMessage}
+  schema={schema}
+>
+  <!-- HERO -->
+  <section class="hero" data-surface="deep">
+    <div class="hero-bg" aria-hidden="true">
+      <Image src={photo('tambak-udara-2')} alt="" loading="eager" widths={[900]} />
+    </div>
+    <div class="hero-frost" aria-hidden="true"></div>
+
+    <div class="shell hero-inner">
+      <div class="hero-card glass" data-reveal>
+        <p class="eyebrow">{c.hero.eyebrow}</p>
+        <h1 class="hero-title">{c.hero.title}</h1>
+        <p class="hero-lead">{c.hero.lead}</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href={waLink(contact.wa, c.waMessage)} target="_blank" rel="noopener">
+            {c.hero.cta}
+          </a>
+          <a class="btn btn-ghost" href="#produk">{c.hero.ctaSecond}</a>
+        </div>
+        <p class="hero-motto">{c.hero.motto}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANGKA KUNCI -->
+  <section class="stats-band" data-surface="deep">
+    <div class="shell">
+      <dl class="stats">
+        {
+          c.stats.map((s) => (
+            <div class="stat glass" data-reveal data-reveal-group="stat">
+              <dt class="stat-value num">
+                {s.value}
+                <span class="stat-unit">{s.unit}</span>
+              </dt>
+              <dd class="stat-label">{s.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- TENTANG -->
+  <section id="tentang" class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.about.eyebrow}</p>
+        <h2 class="section-title">{c.about.title}</h2>
+      </div>
+
+      <div class="about-grid">
+        <div data-reveal>
+          {c.about.body.map((p) => <p class="prose">{p}</p>)}
+          <ul class="points">
+            {
+              c.about.points.map((p) => (
+                <li>
+                  <span class="point-title">{p.title}</span>
+                  <span class="point-desc">{p.desc}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="about-media" data-reveal>
+          <figure class="photo">
+            <Image src={photo('kincir-1')} alt={locale === 'id' ? 'Kincir aerasi di tambak intensif' : 'Paddlewheel aerator at an intensive pond'} widths={[500]} />
+          </figure>
+          <figure class="photo">
+            <Image src={photo('keranjang-panen')} alt={locale === 'id' ? 'Hasil panen disortir dalam keranjang' : 'Harvest sorted into baskets'} widths={[460]} />
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FASILITAS -->
+  <section id="fasilitas" class="section section-deep" data-surface="deep">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.facility.eyebrow}</p>
+        <h2 class="section-title">{c.facility.title}</h2>
+        <p class="section-lead">{c.facility.lead}</p>
+      </div>
+
+      <div class="reel">
+        {
+          c.facility.videos.map((v) => (
+            <figure class="reel-item glass" data-reveal data-reveal-group="reel">
+              {/* preload="none" — video baru diunduh setelah pengunjung menekan play,
+                  jadi halaman tidak menarik megabyte tanpa diminta. */}
+              <video controls preload="none" playsinline poster={`/video/${v.src}-poster.jpg`}>
+                <source src={`/video/${v.src}.mp4`} type="video/mp4" />
+              </video>
+              <figcaption>
+                <span class="reel-title">{v.title}</span>
+                <span class="reel-desc">{v.desc}</span>
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUK -->
+  <section id="produk" class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.products.eyebrow}</p>
+        <h2 class="section-title">{c.products.title}</h2>
+      </div>
+
+      <div class="product-grid">
+        {
+          c.products.items.map((p, i) => (
+            <article class="product" data-reveal data-reveal-group="produk">
+              <figure class="photo product-photo">
+                <Image
+                  src={photo(i === 0 ? 'windu-pack' : 'vaname-kupas-2')}
+                  alt={`${p.name} — ${p.local}`}
+                  widths={[700]}
+                />
+              </figure>
+              <div class="product-body">
+                <p class="product-latin">{p.latin}</p>
+                <h3 class="product-name">{p.name}</h3>
+                <p class="product-local">{p.local}</p>
+                <p class="prose">{p.desc}</p>
+                <dl class="product-specs">
+                  {p.specs.map((s) => (
+                    <div>
+                      <dt>{s.k}</dt>
+                      <dd class="num">{s.v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- BENTUK OLAHAN -->
+  <section class="section section-tint">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.forms.eyebrow}</p>
+        <h2 class="section-title">{c.forms.title}</h2>
+        <p class="section-lead">{c.forms.lead}</p>
+      </div>
+
+      <ul class="form-grid">
+        {
+          c.forms.items.map((f) => (
+            <li class="form-item" data-reveal data-reveal-group="bentuk">
+              <figure class="form-photo">
+                <Image src={photo(f.img)} alt={f.name} widths={[360]} />
+              </figure>
+              <span class="form-code num">{f.code}</span>
+              <span class="form-name">{f.name}</span>
+              <span class="form-desc">{f.desc}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- UKURAN -->
+  <section id="ukuran" class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.sizes.eyebrow}</p>
+        <h2 class="section-title">{c.sizes.title}</h2>
+        <p class="section-lead">{c.sizes.lead}</p>
+      </div>
+
+      <div class="size-tables">
+        {
+          [
+            { title: c.sizes.vannameiTitle, rows: c.sizes.vannamei },
+            { title: c.sizes.tigerTitle, rows: c.sizes.tiger },
+          ].map((table) => (
+            <div class="size-block" data-reveal>
+              <h3 class="size-title">{table.title}</h3>
+              <div class="table-scroll">
+                <table class="size-table">
+                  <thead>
+                    <tr>{c.sizes.headers.map((h) => <th scope="col">{h}</th>)}</tr>
+                  </thead>
+                  <tbody>
+                    {table.rows.map((row) => (
+                      <tr>
+                        <th scope="row" class="num">{row[0]}</th>
+                        <td>{row[1]}</td>
+                        <td class="num">{row[2]}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <p class="note" data-reveal>{c.sizes.note}</p>
+    </div>
+  </section>
+
+  <!-- KEMASAN & MUTU -->
+  <section class="section section-deep" data-surface="deep">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.packing.eyebrow}</p>
+        <h2 class="section-title">{c.packing.title}</h2>
+      </div>
+
+      <div class="packing-grid">
+        <dl class="spec-list" data-reveal>
+          {
+            c.packing.rows.map((r) => (
+              <div class="spec-row">
+                <dt>{r.k}</dt>
+                <dd>{r.v}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <div class="packing-media" data-reveal>
+          <figure class="photo">
+            <Image src={photo('label-karton')} alt={locale === 'id' ? 'Label master carton' : 'Master carton label'} widths={[560]} />
+          </figure>
+          <figure class="photo">
+            <Image src={photo('suhu')} alt={locale === 'id' ? 'Pemantauan suhu unit pendingin' : 'Reefer temperature monitoring'} widths={[500]} />
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ALUR EKSPOR -->
+  <section id="ekspor" class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.flow.eyebrow}</p>
+        <h2 class="section-title">{c.flow.title}</h2>
+      </div>
+
+      <ol class="flow">
+        {
+          c.flow.steps.map((s, i) => (
+            <li class="flow-step" data-reveal data-reveal-group="alur">
+              <span class="flow-num num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="flow-name">{s.name}</span>
+              <span class="flow-desc">{s.desc}</span>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="note" data-reveal>{c.flow.note}</p>
+
+      <div class="logistics" data-reveal>
+        <figure class="photo">
+          <Image src={photo('truk-1')} alt={locale === 'id' ? 'Armada truk berpendingin milik sendiri' : 'Our own fleet of refrigerated trucks'} widths={[760]} />
+        </figure>
+        <figure class="photo">
+          <Image src={photo('kontainer')} alt={locale === 'id' ? 'Bagian dalam reefer container' : 'Reefer container interior'} widths={[440]} />
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERTIFIKASI -->
+  <section class="section section-tint">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.certs.eyebrow}</p>
+        <h2 class="section-title">{c.certs.title}</h2>
+        <p class="section-lead">{c.certs.lead}</p>
+      </div>
+
+      <ul class="cert-grid">
+        {
+          c.certs.items.map((item) => (
+            <li class="cert" data-reveal data-reveal-group="sertifikat">
+              <span class="cert-name">{item.name}</span>
+              <span class="cert-desc">{item.desc}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- KONTAK -->
+  <section id="kontak" class="section section-deep" data-surface="deep">
+    <div class="shell contact-grid">
+      <div data-reveal>
+        <p class="eyebrow">{c.contact.eyebrow}</p>
+        <h2 class="section-title">{c.contact.title}</h2>
+        <p class="section-lead">{c.contact.lead}</p>
+
+        <div class="contact-actions">
+          <a class="btn btn-primary" href={waLink(contact.wa, c.waMessage)} target="_blank" rel="noopener">
+            {c.contact.waCta} · {contact.waLabel}
+          </a>
+          <a class="btn btn-ghost" href={`mailto:${contact.email}`}>{c.contact.emailCta}</a>
+        </div>
+
+        <div class="pic">
+          <p class="pic-title">{c.contact.picTitle}</p>
+          <ul>
+            {contact.contacts.map((p) => <li>{p.name} · <span>{p.role[locale]}</span></li>)}
+          </ul>
+        </div>
+      </div>
+
+      <ul class="checklist glass" data-reveal>
+        {c.contact.checklist.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---------- HERO ---------- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    margin-top: -4.5rem;
+    padding-top: 4.5rem;
+  }
+
+  /* Foto sumber hanya 896px. Diburamkan kuat dan diperbesar supaya berfungsi
+     sebagai tekstur beku, bukan sebagai foto yang dipaksa tajam lalu pecah. */
+  .hero-bg {
+    position: absolute;
+    inset: -6%;
+  }
+
+  .hero-bg :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(14px) saturate(0.75) brightness(0.62);
+    transform: scale(1.08);
+  }
+
+  .hero-frost {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        ellipse at 20% 15%,
+        color-mix(in srgb, var(--color-accent) 22%, transparent),
+        transparent 55%
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--color-deep) 55%, transparent),
+        color-mix(in srgb, var(--color-deep) 92%, transparent)
+      );
+  }
+
+  .hero-inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: calc(100svh - var(--frame-h) - 4.5rem);
+    padding-block: clamp(3rem, 8vw, 6rem);
+  }
+
+  .hero-card {
+    max-width: 46rem;
+    padding: clamp(1.75rem, 4vw, 3.25rem);
+    border-radius: 2px;
+  }
+
+  .hero-title {
+    margin-top: 1.1rem;
+    font-size: var(--text-hero);
+    line-height: var(--text-hero--line-height);
+  }
+
+  .hero-lead {
+    margin-top: 1.5rem;
+    max-width: 46ch;
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+    color: var(--color-on-deep-muted);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .hero-motto {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-line);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--color-second);
+  }
+
+  /* ---------- ANGKA ---------- */
+  .stats-band {
+    background: var(--color-deep);
+    padding-bottom: clamp(3rem, 7vw, 5rem);
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: -4rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .stat {
+    padding: 1.5rem;
+    border-radius: 2px;
+  }
+
+  .stat-value {
+    font-size: clamp(2rem, 1.5rem + 1.8vw, 2.85rem);
+    line-height: 1;
+    color: var(--color-on-deep);
+  }
+
+  .stat-unit {
+    display: block;
+    margin-top: 0.4rem;
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .stat-label {
+    margin-top: 0.7rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--color-on-deep-muted);
+  }
+
+  /* ---------- SECTION UMUM ---------- */
+  .section {
+    padding-block: clamp(4rem, 9vw, 7.5rem);
+  }
+
+  .section-deep {
+    background: var(--color-deep);
+  }
+
+  .section-tint {
+    background: color-mix(in srgb, var(--color-accent) 12%, var(--color-paper));
+  }
+
+  .section-head {
+    max-width: 46rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .section-title {
+    margin-top: 0.9rem;
+    font-size: var(--text-display);
+    line-height: var(--text-display--line-height);
+  }
+
+  .section-lead,
+  .prose {
+    margin-top: 1.25rem;
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+    color: var(--color-muted);
+  }
+
+  [data-surface='deep'] .section-lead,
+  [data-surface='deep'] .prose {
+    color: var(--color-on-deep-muted);
+  }
+
+  .note {
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: var(--color-muted);
+  }
+
+  [data-surface='deep'] .note {
+    color: var(--color-on-deep-muted);
+  }
+
+  /* ---------- TENTANG ---------- */
+  .about-grid {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .points {
+    display: grid;
+    gap: 0;
+    margin-top: 2.5rem;
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .points li {
+    display: grid;
+    gap: 0.3rem;
+    padding-block: 1.15rem;
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .point-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-ink);
+  }
+
+  .point-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+
+  .about-media {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+  }
+
+  .about-media .photo {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* ---------- REEL VIDEO ---------- */
+  .reel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1.25rem;
+  }
+
+  .reel-item {
+    padding: 0.75rem;
+    border-radius: 2px;
+  }
+
+  .reel-item video {
+    width: 100%;
+    aspect-ratio: 404 / 720;
+    object-fit: cover;
+    background: var(--color-deep-2);
+    display: block;
+  }
+
+  .reel-item figcaption {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1rem 0.5rem 0.4rem;
+  }
+
+  .reel-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--color-on-deep);
+  }
+
+  .reel-desc {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--color-on-deep-muted);
+  }
+
+  /* ---------- PRODUK ---------- */
+  .product-grid {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .product {
+    border: 1px solid var(--color-line-soft);
+    background: var(--color-paper-2);
+  }
+
+  .product-photo {
+    aspect-ratio: 16 / 10;
+  }
+
+  .product-body {
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  .product-latin {
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+
+  .product-name {
+    margin-top: 0.35rem;
+    font-size: var(--text-title);
+    line-height: var(--text-title--line-height);
+  }
+
+  .product-local {
+    margin-top: 0.25rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-second);
+  }
+
+  .product-specs {
+    display: grid;
+    gap: 0;
+    margin-top: 1.75rem;
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .product-specs > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.8rem;
+    border-bottom: 1px solid var(--color-line-soft);
+    font-size: 0.88rem;
+  }
+
+  .product-specs dt {
+    color: var(--color-muted);
+  }
+
+  .product-specs dd {
+    text-align: right;
+    color: var(--color-ink);
+  }
+
+  /* ---------- BENTUK OLAHAN ---------- */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: 1.25rem;
+  }
+
+  .form-item {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1rem;
+    background: var(--color-paper-2);
+    border: 1px solid var(--color-line-soft);
+  }
+
+  .form-photo {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    margin-bottom: 0.85rem;
+    background: #fff;
+  }
+
+  .form-photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .form-code {
+    font-size: 1.35rem;
+    color: var(--color-ink);
+  }
+
+  .form-name {
+    font-size: 0.88rem;
+    color: var(--color-ink);
+  }
+
+  .form-desc {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+
+  /* ---------- TABEL UKURAN ---------- */
+  .size-tables {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .size-title {
+    font-size: var(--text-title);
+    margin-bottom: 1.25rem;
+  }
+
+  /* Tabel lebar menggulir di dalam wadahnya sendiri, halaman tidak ikut geser. */
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  .size-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .size-table th,
+  .size-table td {
+    text-align: left;
+    padding: 0.85rem 1rem 0.85rem 0;
+    border-bottom: 1px solid var(--color-line-soft);
+    white-space: nowrap;
+  }
+
+  .size-table thead th {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    border-bottom-color: var(--color-line);
+  }
+
+  .size-table tbody th {
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .size-table td {
+    color: var(--color-muted);
+  }
+
+  /* ---------- KEMASAN ---------- */
+  .packing-grid {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .spec-list {
+    border-top: 1px solid var(--color-line);
+  }
+
+  .spec-row {
+    display: grid;
+    gap: 0.35rem;
+    padding-block: 1.1rem;
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .spec-row dt {
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .spec-row dd {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--color-on-deep);
+  }
+
+  .packing-media {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+  }
+
+  .packing-media .photo {
+    aspect-ratio: 3 / 2;
+  }
+
+  /* ---------- ALUR ---------- */
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 1px;
+    background: var(--color-line-soft);
+    border: 1px solid var(--color-line-soft);
+  }
+
+  .flow-step {
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+    padding: 1.5rem 1.25rem;
+    background: var(--color-paper);
+  }
+
+  .flow-num {
+    font-size: 1.6rem;
+    color: var(--color-second);
+  }
+
+  .flow-name {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--color-ink);
+  }
+
+  .flow-desc {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+
+  .logistics {
+    display: grid;
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .logistics .photo {
+    aspect-ratio: 16 / 9;
+  }
+
+  /* ---------- SERTIFIKASI ---------- */
+  .cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1px;
+    background: var(--color-line-soft);
+    border: 1px solid var(--color-line-soft);
+  }
+
+  .cert {
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+    padding: 1.5rem;
+    background: var(--color-paper-2);
+  }
+
+  .cert-name {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    color: var(--color-ink);
+  }
+
+  .cert-desc {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+  }
+
+  /* ---------- KONTAK ---------- */
+  .contact-grid {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .pic {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .pic-title {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .pic li {
+    font-size: 0.95rem;
+    padding-block: 0.3rem;
+    color: var(--color-on-deep);
+  }
+
+  .pic li span {
+    color: var(--color-on-deep-muted);
+  }
+
+  .checklist {
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    align-self: start;
+    display: grid;
+    gap: 0;
+    border-radius: 2px;
+  }
+
+  .checklist li {
+    display: flex;
+    gap: 0.75rem;
+    padding-block: 0.9rem;
+    font-size: 0.95rem;
+    color: var(--color-on-deep);
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .checklist li:last-child {
+    border-bottom: 0;
+  }
+
+  .checklist li::before {
+    content: '';
+    flex: none;
+    width: 7px;
+    height: 7px;
+    margin-top: 0.55rem;
+    background: var(--color-accent);
+    transform: rotate(45deg);
+  }
+
+  /* ---------- RESPONSIF ---------- */
+  @media (min-width: 760px) {
+    .stats {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .about-grid {
+      grid-template-columns: 1.2fr 1fr;
+      gap: 4rem;
+    }
+
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .size-tables {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3rem;
+    }
+
+    .packing-grid {
+      grid-template-columns: 1.15fr 1fr;
+      gap: 4rem;
+    }
+
+    .logistics {
+      grid-template-columns: 1.7fr 1fr;
+    }
+
+    .contact-grid {
+      grid-template-columns: 1.3fr 1fr;
+      align-items: start;
+    }
+  }
+</style>

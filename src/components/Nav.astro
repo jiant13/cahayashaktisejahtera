@@ -1,0 +1,313 @@
+---
+/**
+ * Nav dipakai bersama oleh keempat route dengan struktur yang persis sama.
+ *
+ * Sekarang isi tengahnya anchor ke section di halaman yang sedang dibuka. Kalau
+ * nanti owner menggabungkan semua usaha jadi satu profil PT, cukup ganti isi
+ * prop `links` jadi nav global — tinggi, spacing, dan susunannya tidak berubah,
+ * jadi perpindahannya mulus.
+ */
+import Logo from './Logo.astro';
+import { localePath, LOCALES, type Brand, type Locale } from '../data/site';
+import { ui } from '../data/ui';
+
+interface Props {
+  brand: Brand;
+  locale: Locale;
+  links: { label: string; href: string }[];
+  waHref: string;
+  /** Slug halaman ini, dipakai tombol ganti bahasa agar tetap di halaman yang sama. */
+  slug: string;
+}
+
+const { brand, locale, links, waHref, slug } = Astro.props;
+const t = ui(locale);
+const otherLocale = LOCALES.find((l) => l !== locale)!;
+const homeHref = localePath(locale, brand.slug);
+---
+
+<a class="skip-link" href="#konten">{t.skipToContent}</a>
+
+<header id="site-nav" class="site-nav">
+  <div class="shell nav-inner">
+    <a class="nav-brand" href={homeHref}>
+      <Logo variant="monogram" height={34} />
+      <span class="nav-brand-text">
+        <span class="nav-brand-name">{brand.name[locale]}</span>
+        <span class="nav-brand-short">{brand.short[locale]}</span>
+      </span>
+    </a>
+
+    <nav class="nav-links" aria-label={t.menu}>
+      {links.map((link) => <a href={link.href}>{link.label}</a>)}
+    </nav>
+
+    <div class="nav-actions">
+      <a
+        class="lang-toggle"
+        href={localePath(otherLocale, slug)}
+        hreflang={otherLocale}
+        aria-label={t.langSwitchAria}
+      >
+        <span aria-hidden="true">{otherLocale.toUpperCase()}</span>
+      </a>
+
+      <a class="btn btn-primary nav-wa" href={waHref} target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+          <path
+            d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.48 1.34 5L2 22l5.16-1.35a9.9 9.9 0 0 0 4.88 1.25h.01c5.5 0 9.96-4.46 9.96-9.96 0-2.66-1.04-5.16-2.92-7.04A9.88 9.88 0 0 0 12.04 2Zm0 1.87c2.16 0 4.19.84 5.72 2.37a8.05 8.05 0 0 1 2.37 5.72c0 4.46-3.63 8.09-8.1 8.09a8.2 8.2 0 0 1-4.16-1.14l-.3-.18-3.06.8.82-2.99-.2-.31a8.05 8.05 0 0 1-1.24-4.3c0-4.46 3.63-8.06 8.15-8.06Zm-2.5 4.2c-.18 0-.47.07-.72.34-.25.27-.95.93-.95 2.27s.98 2.63 1.11 2.81c.14.18 1.9 2.9 4.6 3.96 2.25.89 2.71.71 3.2.67.49-.05 1.58-.65 1.8-1.27.22-.62.22-1.16.16-1.27-.07-.11-.25-.18-.52-.31-.27-.14-1.58-.78-1.83-.87-.24-.09-.42-.13-.6.14-.18.27-.69.87-.84 1.05-.16.18-.31.2-.58.07-.27-.14-1.13-.42-2.16-1.33-.8-.71-1.34-1.59-1.49-1.86-.16-.27-.02-.42.12-.55.12-.12.27-.31.4-.47.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.47-.07-.14-.6-1.45-.83-1.98-.21-.5-.43-.44-.59-.45h-.53Z"
+          ></path>
+        </svg>
+        <span>{t.waCta}</span>
+      </a>
+
+      <button
+        id="nav-toggle"
+        class="nav-burger"
+        type="button"
+        aria-expanded="false"
+        aria-controls="nav-panel"
+        aria-label={t.menu}
+      >
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <div id="nav-panel" class="nav-panel" hidden>
+    <nav class="shell nav-panel-inner" aria-label={t.menu}>
+      {links.map((link) => <a href={link.href}>{link.label}</a>)}
+      <a class="btn btn-primary nav-panel-wa" href={waHref} target="_blank" rel="noopener">
+        {t.waCta}
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: -999px;
+    top: 0;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    background: var(--color-accent);
+    color: var(--color-deep);
+    font-size: 0.85rem;
+  }
+
+  .skip-link:focus {
+    left: 0;
+  }
+
+  .site-nav {
+    position: sticky;
+    /* Menempel tepat di bawah bilah bingkai, bukan di tepi jendela. */
+    top: var(--frame-h);
+    z-index: 60;
+    color: var(--color-on-deep);
+    transition:
+      background-color 0.35s var(--ease-out-soft),
+      border-color 0.35s var(--ease-out-soft);
+    border-bottom: 1px solid transparent;
+  }
+
+  /* Awalnya transparan di atas hero gelap, memadat setelah digulir. */
+  .site-nav[data-scrolled='true'] {
+    background: color-mix(in srgb, var(--color-deep) 88%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom-color: var(--color-line);
+  }
+
+  /* Panel menu terbuka membuat <header> lebih tinggi daripada bagian hero yang
+     ditumpanginya, sehingga baris nav keluar dari area hero dan latar terang
+     halaman terlihat menembus. Saat terbuka, nav wajib punya latar solid. */
+  .site-nav[data-open='true'] {
+    background: var(--color-deep);
+    backdrop-filter: none;
+    border-bottom-color: var(--color-line);
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: 4.5rem;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-right: auto;
+    min-width: 0;
+  }
+
+  .nav-brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+    min-width: 0;
+  }
+
+  .nav-brand-name {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+
+  .nav-brand-short {
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    white-space: nowrap;
+  }
+
+  .nav-links {
+    display: none;
+    align-items: center;
+    gap: 1.75rem;
+  }
+
+  .nav-links a {
+    font-size: 0.85rem;
+    color: var(--color-on-deep);
+    opacity: 0.82;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+
+  .nav-links a:hover {
+    opacity: 1;
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .lang-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.4rem;
+    height: 2.2rem;
+    padding-inline: 0.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    transition:
+      border-color 0.2s,
+      background-color 0.2s;
+  }
+
+  .lang-toggle:hover {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  }
+
+  .nav-wa {
+    display: none;
+    padding: 0.6rem 1.1rem;
+  }
+
+  .nav-burger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 2.4rem;
+    height: 2.2rem;
+    padding-inline: 0.6rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+  }
+
+  .nav-burger span {
+    display: block;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform 0.3s var(--ease-out-soft);
+  }
+
+  .nav-burger[aria-expanded='true'] span:first-child {
+    transform: translateY(3.25px) rotate(45deg);
+  }
+
+  .nav-burger[aria-expanded='true'] span:last-child {
+    transform: translateY(-3.25px) rotate(-45deg);
+  }
+
+  .nav-panel {
+    background: var(--color-deep);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .nav-panel-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-block: 1rem 1.5rem;
+  }
+
+  .nav-panel-inner a {
+    padding-block: 0.7rem;
+    font-size: 0.95rem;
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .nav-panel-wa {
+    margin-top: 1rem;
+    border-bottom: 0 !important;
+    align-self: flex-start;
+  }
+
+  @media (min-width: 900px) {
+    .nav-links,
+    .nav-wa {
+      display: inline-flex;
+    }
+
+    .nav-burger {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const nav = document.getElementById('site-nav');
+  const toggle = document.getElementById('nav-toggle');
+  const panel = document.getElementById('nav-panel');
+
+  if (nav) {
+    const onScroll = () => nav.setAttribute('data-scrolled', String(window.scrollY > 24));
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  if (toggle && panel) {
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      panel.hidden = !open;
+      nav?.setAttribute('data-open', String(open));
+    };
+
+    toggle.addEventListener('click', () => {
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+
+    panel.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) setOpen(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    });
+  }
+</script>

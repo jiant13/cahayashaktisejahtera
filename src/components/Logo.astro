@@ -1,0 +1,56 @@
+---
+/**
+ * Logo resmi dirender lewat CSS mask, bukan <img>.
+ *
+ * Berkas aslinya monokrom dengan alpha, jadi kanal alpha-nya dipakai sebagai
+ * masker dan diwarnai `currentColor`. Satu aset melayani keempat tema tanpa
+ * perlu bikin varian warna, dan tetap tajam di layar retina.
+ *
+ * Bentuk logo tidak pernah diregangkan — lebar dan tinggi selalu proporsional,
+ * sesuai larangan di Brand Guidelines pasal 07.
+ */
+interface Props {
+  variant?: 'lockup' | 'monogram' | 'mark';
+  /** Tinggi tampil dalam piksel. Minimum menurut guidelines: lockup 140px lebar,
+   *  logo primer 48px, monogram 24px. */
+  height?: number;
+  class?: string;
+  title?: string;
+}
+
+const { variant = 'monogram', height = 32, class: className = '', title } = Astro.props;
+
+// Rasio dari berkas yang sudah di-trim, supaya tidak ada distorsi.
+const RATIO = {
+  lockup: 1000 / 381,
+  monogram: 512 / 507,
+  mark: 1,
+} as const;
+
+const src = `/brand/${variant}.png`;
+const width = Math.round(height * RATIO[variant]);
+---
+
+<span
+  class:list={['logo', className]}
+  style={`--logo-src: url('${src}'); width: ${width}px; height: ${height}px;`}
+  role={title ? 'img' : 'presentation'}
+  aria-label={title}
+  aria-hidden={title ? undefined : 'true'}
+></span>
+
+<style>
+  .logo {
+    display: inline-block;
+    flex: none;
+    background-color: currentColor;
+    -webkit-mask-image: var(--logo-src);
+    mask-image: var(--logo-src);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+</style>

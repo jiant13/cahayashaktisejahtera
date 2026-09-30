@@ -1,0 +1,222 @@
+---
+/**
+ * Footer dengan grid empat kolom yang identik di keempat route.
+ *
+ * Tautan silang antardivisi memang hidup di sini. Wajar untuk footer perusahaan,
+ * tidak merusak kesan halaman landing, dan begitu semuanya digabung ke satu
+ * profil PT strukturnya sudah menyambung tanpa dibangun ulang.
+ */
+import Logo from './Logo.astro';
+import { BRANDS, SITE, localePath, waLink, type Brand, type Locale } from '../data/site';
+import { ui } from '../data/ui';
+
+interface Props {
+  brand: Brand;
+  locale: Locale;
+  contact: {
+    wa: string;
+    waLabel: string;
+    email: string;
+    phoneLabel?: string;
+    address?: string;
+    hours?: string;
+  };
+  waMessage: string;
+}
+
+const { brand, locale, contact, waMessage } = Astro.props;
+const t = ui(locale);
+const year = new Date().getFullYear();
+const isHolding = brand.key === 'induk';
+---
+
+<footer class="site-footer" data-surface="deep">
+  <div class="shell">
+    <div class="footer-grid">
+      <div class="footer-col footer-about">
+        <a href={localePath(locale, '')} class="footer-logo">
+          <Logo variant="lockup" height={64} title={SITE.legalName} />
+        </a>
+        <p class="footer-blurb">{t.aboutHolding}</p>
+        <p class="footer-motto">{SITE.motto}</p>
+      </div>
+
+      <div class="footer-col">
+        <h2 class="footer-heading">{t.divisions}</h2>
+        <ul class="footer-list">
+          {
+            BRANDS.filter((b) => b.key !== 'induk').map((b) => (
+              <li>
+                <a href={localePath(locale, b.slug)} aria-current={b.key === brand.key ? 'page' : undefined}>
+                  <span class="footer-div-name">{b.name[locale]}</span>
+                  <span class="footer-div-short">{b.short[locale]}</span>
+                </a>
+              </li>
+            ))
+          }
+          {
+            !isHolding && (
+              <li>
+                <a href={localePath(locale, '')} class="footer-back">
+                  {t.backToHolding}
+                </a>
+              </li>
+            )
+          }
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h2 class="footer-heading">{t.contact}</h2>
+        <ul class="footer-list footer-contact">
+          <li>
+            <a href={waLink(contact.wa, waMessage)} target="_blank" rel="noopener">
+              WhatsApp · {contact.waLabel}
+            </a>
+          </li>
+          {contact.phoneLabel && (
+            <li>
+              <a href={`tel:+${contact.wa}`}>{t.phone} · {contact.phoneLabel}</a>
+            </li>
+          )}
+          <li><a href={`mailto:${contact.email}`}>{contact.email}</a></li>
+          {contact.address && <li class="footer-plain">{contact.address}</li>}
+          {contact.hours && <li class="footer-plain">{t.hours} · {contact.hours}</li>}
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h2 class="footer-heading">{t.company}</h2>
+        <p class="footer-legal-name">{SITE.legalName}</p>
+        <p class="footer-note">{t.certNote}</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© {year} {SITE.legalName}. {t.rights}</p>
+      {!isHolding && <p class="footer-part">{t.partOf} {SITE.legalName}</p>}
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: 4.5rem 2rem;
+    border-top: 1px solid var(--color-line);
+  }
+
+  .footer-grid {
+    display: grid;
+    gap: 2.75rem;
+    grid-template-columns: 1fr;
+  }
+
+  .footer-about {
+    max-width: 34rem;
+  }
+
+  /* Logo dikunci ke putih, bukan --color-on-deep yang bergeser mengikuti tema.
+     Guidelines hanya mengizinkan navy, emas, putih, hitam. */
+  .footer-logo {
+    display: inline-block;
+    color: var(--logo-on-deep);
+  }
+
+  .footer-blurb {
+    margin-top: 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--color-on-deep-muted);
+  }
+
+  .footer-motto {
+    margin-top: 1.25rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.24em;
+    color: var(--color-accent);
+  }
+
+  .footer-heading {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 1.1rem;
+  }
+
+  .footer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    font-size: 0.9rem;
+  }
+
+  .footer-list a {
+    color: var(--color-on-deep);
+    opacity: 0.85;
+    transition: opacity 0.2s;
+  }
+
+  .footer-list a:hover {
+    opacity: 1;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .footer-div-name {
+    display: block;
+  }
+
+  .footer-div-short {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--color-on-deep-muted);
+  }
+
+  .footer-back,
+  .footer-note {
+    font-size: 0.8rem;
+    color: var(--color-on-deep-muted);
+  }
+
+  .footer-plain {
+    color: var(--color-on-deep-muted);
+  }
+
+  .footer-legal-name {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-note {
+    line-height: 1.65;
+  }
+
+  .footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-line-soft);
+    font-size: 0.78rem;
+    color: var(--color-on-deep-muted);
+  }
+
+  @media (min-width: 700px) {
+    .footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1040px) {
+    .footer-grid {
+      grid-template-columns: 1.6fr 1fr 1fr 1fr;
+      gap: 3rem;
+    }
+  }
+</style>
