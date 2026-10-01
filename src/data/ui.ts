@@ -15,7 +15,7 @@ export const UI = {
     contact: 'Kontak',
     company: 'Perusahaan',
     aboutHolding:
-      'PT Cahaya Shakti Sejahtera menaungi usaha budidaya dan ekspor udang beku, perdagangan arang batok kelapa, serta layanan pijat dan refleksi.',
+      'PT Cahaya Shakti Sejahtera menaungi usaha budidaya dan ekspor udang beku, suplai bandeng, cumi, dan gurita beku, perdagangan arang batok kelapa, serta layanan pijat dan refleksi.',
     backToHolding: 'Profil perusahaan induk',
     partOf: 'Divisi dari',
     rights: 'Seluruh hak cipta dilindungi.',
@@ -37,7 +37,7 @@ export const UI = {
     contact: 'Contact',
     company: 'Company',
     aboutHolding:
-      'PT Cahaya Shakti Sejahtera oversees integrated shrimp farming and frozen shrimp export, coconut shell charcoal trading, and massage and reflexology services.',
+      'PT Cahaya Shakti Sejahtera oversees integrated shrimp farming and frozen shrimp export, frozen milkfish, squid, and octopus supply, coconut shell charcoal trading, and massage and reflexology services.',
     backToHolding: 'Holding company profile',
     partOf: 'A division of',
     rights: 'All rights reserved.',

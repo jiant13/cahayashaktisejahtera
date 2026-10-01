@@ -7,7 +7,7 @@ export const INDUK = {
     meta: {
       title: 'PT Cahaya Shakti Sejahtera — Kuat, Aman, Sejahtera',
       description:
-        'Perusahaan Indonesia yang menaungi budidaya dan ekspor udang beku, perdagangan arang batok kelapa, serta layanan pijat dan refleksi.',
+        'Perusahaan Indonesia yang menaungi budidaya dan ekspor udang beku, suplai bandeng, cumi, dan gurita beku, perdagangan arang batok kelapa, serta layanan pijat dan refleksi.',
     },
     nav: [
       { label: 'Tentang', href: '#tentang' },
@@ -18,8 +18,8 @@ export const INDUK = {
     waMessage: 'Halo PT Cahaya Shakti Sejahtera, saya ingin menanyakan informasi perusahaan.',
     hero: {
       eyebrow: 'Perusahaan Induk',
-      title: 'Tiga bidang usaha, satu standar kerja.',
-      lead: 'PT Cahaya Shakti Sejahtera menaungi budidaya dan ekspor udang beku, perdagangan arang batok kelapa, serta layanan pijat dan refleksi. Setiap divisi berjalan dengan dokumen resmi dan mutu yang dijaga di tiap tahap.',
+      title: 'Lima divisi, satu standar kerja.',
+      lead: 'PT Cahaya Shakti Sejahtera menaungi budidaya dan ekspor udang beku, suplai bandeng, cumi, dan gurita beku, perdagangan arang batok kelapa, serta layanan pijat dan refleksi. Setiap divisi berjalan dengan dokumen resmi dan mutu yang dijaga di tiap tahap.',
       cta: 'Lihat divisi kami',
       ctaContact: 'Hubungi kami',
     },
@@ -28,18 +28,18 @@ export const INDUK = {
       title: 'Dikelola langsung, bukan sekadar perantara.',
       body: [
         'Perusahaan ini tumbuh dari usaha tambak udang yang dikelola sendiri — dari benur, panen, pembekuan, sampai muat ke kontainer. Prinsip yang sama kemudian dibawa ke lini usaha lain: rantai pasok yang bisa ditelusuri, mutu yang diperiksa di tiap tahap, dan dokumen yang lengkap sebelum barang berangkat.',
-        'Untuk komoditas yang tidak kami produksi sendiri, kami bekerja dengan mitra produksi yang fasilitasnya nyata dan bisa dikunjungi. Kami menyebutkan siapa mereka secara terbuka.',
+        'Untuk komoditas yang tidak kami produksi sendiri — arang, bandeng, cumi, dan gurita — kami bekerja dengan mitra produksi dan jaringan pemasok, dan spesifikasinya disepakati sebelum barang disiapkan.',
       ],
       stats: [
         { value: '220', unit: 'Hektar', label: 'Luas tambak dikelola sendiri' },
         { value: '10', unit: 'Ton / hari', label: 'Kapasitas proses & pembekuan' },
         { value: '200', unit: 'Ton', label: 'Kapasitas cold storage' },
-        { value: '3', unit: 'Divisi', label: 'Udang, arang, dan layanan pijat' },
+        { value: '5', unit: 'Divisi', label: 'Seafood, arang, dan layanan pijat' },
       ],
     },
     divisions: {
       eyebrow: 'Divisi Kami',
-      title: 'Tiga usaha yang berdiri sendiri.',
+      title: 'Lima usaha yang berdiri sendiri.',
       lead: 'Masing-masing punya produk, pasar, dan narahubungnya sendiri.',
       cta: 'Selengkapnya',
     },
@@ -69,7 +69,7 @@ export const INDUK = {
     meta: {
       title: 'PT Cahaya Shakti Sejahtera — Strong, Safe, Prosperous',
       description:
-        'An Indonesian company overseeing integrated shrimp farming and frozen shrimp export, coconut shell charcoal trading, and massage and reflexology services.',
+        'An Indonesian company overseeing integrated shrimp farming and frozen shrimp export, frozen milkfish, squid, and octopus supply, coconut shell charcoal trading, and massage and reflexology services.',
     },
     nav: [
       { label: 'About', href: '#tentang' },
@@ -80,8 +80,8 @@ export const INDUK = {
     waMessage: 'Hello PT Cahaya Shakti Sejahtera, I would like to request company information.',
     hero: {
       eyebrow: 'Holding Company',
-      title: 'Three businesses, one standard of work.',
-      lead: 'PT Cahaya Shakti Sejahtera oversees integrated shrimp farming and frozen shrimp export, coconut shell charcoal trading, and massage and reflexology services. Every division operates with complete documentation and quality checks at each stage.',
+      title: 'Five divisions, one standard of work.',
+      lead: 'PT Cahaya Shakti Sejahtera oversees integrated shrimp farming and frozen shrimp export, frozen milkfish, squid, and octopus supply, coconut shell charcoal trading, and massage and reflexology services. Every division operates with complete documentation and quality checks at each stage.',
       cta: 'View our divisions',
       ctaContact: 'Contact us',
     },
@@ -90,18 +90,18 @@ export const INDUK = {
       title: 'Directly managed, not merely a middleman.',
       body: [
         'The company grew out of shrimp ponds we run ourselves — from hatchery and harvest through freezing and container loading. That same principle carries into the other business lines: a traceable supply chain, quality inspected at every stage, and complete documents before anything ships.',
-        'For commodities we do not produce ourselves, we work with production partners whose facilities are real and open to visits. We name them openly.',
+        'For commodities we do not produce ourselves — charcoal, milkfish, squid, and octopus — we work with production partners and supplier networks, and the specification is agreed before goods are prepared.',
       ],
       stats: [
         { value: '220', unit: 'Hectares', label: 'Ponds under our own management' },
         { value: '10', unit: 'Tonnes / day', label: 'Processing & freezing capacity' },
         { value: '200', unit: 'Tonnes', label: 'Cold storage capacity' },
-        { value: '3', unit: 'Divisions', label: 'Shrimp, charcoal, and wellness' },
+        { value: '5', unit: 'Divisions', label: 'Seafood, charcoal, and wellness' },
       ],
     },
     divisions: {
       eyebrow: 'Our Divisions',
-      title: 'Three businesses that stand on their own.',
+      title: 'Five businesses that stand on their own.',
       lead: 'Each has its own products, markets, and point of contact.',
       cta: 'Learn more',
     },

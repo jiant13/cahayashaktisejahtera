@@ -450,8 +450,18 @@ const schema = {
       gap: 4rem;
     }
 
+    /* Lima kartu: tiga di baris atas, dua lebih lebar di baris bawah,
+       supaya tidak ada sel kosong. */
     .division-grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    .division {
+      grid-column: span 2;
+    }
+
+    .division:nth-child(n + 4) {
+      grid-column: span 3;
     }
 
     .division {

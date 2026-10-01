@@ -1,0 +1,1032 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { CONTACT, SITE, getBrand, waLink, type Locale } from '../../data/site';
+import { milkfish } from '../../data/pages/milkfish';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const c = milkfish(locale);
+const brand = getBrand('milkfish');
+const contact = CONTACT.milkfish;
+
+const files = import.meta.glob<{ default: ImageMetadata }>('../../assets/photos/milkfish/*.jpg', {
+  eager: true,
+});
+const photo = (name: string) => files[`../../assets/photos/milkfish/${name}.jpg`]!.default;
+
+const alt = (id: string, en: string) => (locale === 'id' ? id : en);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: alt('Bandeng Utuh Beku', 'Frozen Whole Milkfish'),
+  description: c.meta.description,
+  category: alt('Seafood beku', 'Frozen seafood'),
+  countryOfOrigin: 'ID',
+  brand: { '@type': 'Organization', name: SITE.legalName },
+  additionalProperty: c.product.specRows.map(([k, v]) => ({
+    '@type': 'PropertyValue',
+    name: k,
+    value: v,
+  })),
+};
+---
+
+<Base
+  brand={brand}
+  locale={locale}
+  slug={brand.slug}
+  title={c.meta.title}
+  description={c.meta.description}
+  links={[...c.nav]}
+  contact={contact}
+  waMessage={c.waMessage}
+  schema={schema}
+>
+  <!-- HERO -->
+  <section class="hero" data-surface="deep">
+    <div class="hero-bg" aria-hidden="true">
+      <Image src={photo('segar-tumpukan')} alt="" loading="eager" widths={[836]} />
+    </div>
+    <div class="hero-shade" aria-hidden="true"></div>
+
+    <div class="shell hero-inner">
+      <div class="hero-text">
+        <p class="eyebrow" data-reveal>{c.hero.eyebrow}</p>
+        <h1 class="hero-title" data-reveal style="--reveal-delay:80ms">{c.hero.title}</h1>
+        <p class="hero-lead" data-reveal style="--reveal-delay:170ms">{c.hero.lead}</p>
+        <div class="hero-actions" data-reveal style="--reveal-delay:260ms">
+          <a class="btn btn-primary" href={waLink(contact.wa, c.waMessage)} target="_blank" rel="noopener">
+            {c.hero.cta}
+          </a>
+          <a class="btn btn-ghost" href="#produk">{c.hero.ctaSecond}</a>
+        </div>
+      </div>
+
+      <dl class="highlights" data-reveal style="--reveal-delay:340ms">
+        {
+          c.highlights.map((h) => (
+            <div class="highlight">
+              <dt class="highlight-value num">
+                {h.value}
+                <span class="highlight-unit">{h.unit}</span>
+              </dt>
+              <dd class="highlight-label">{h.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- PRODUK -->
+  <section id="produk" class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.product.eyebrow}</p>
+        <h2 class="section-title">{c.product.title}</h2>
+        <p class="section-lead">{c.product.lead}</p>
+      </div>
+
+      <div class="split">
+        <div class="table-scroll" data-reveal>
+          <table class="data-table">
+            <thead>
+              <tr>{c.product.specHeaders.map((h) => <th scope="col">{h}</th>)}</tr>
+            </thead>
+            <tbody>
+              {
+                c.product.specRows.map(([k, v]) => (
+                  <tr>
+                    <th scope="row">{k}</th>
+                    <td>{v}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <figure class="photo split-photo" data-reveal>
+          <Image src={photo('sampel-ukuran')} alt={alt('Sampel bandeng dengan label ukuran 500–800 g', 'Milkfish samples labelled 500–800 g')} widths={[620]} />
+        </figure>
+      </div>
+
+      <h3 class="sub-title" data-reveal>{c.product.sizeTitle}</h3>
+      <div class="table-scroll" data-reveal>
+        <table class="data-table size-table">
+          <thead>
+            <tr>{c.product.sizeHeaders.map((h) => <th scope="col">{h}</th>)}</tr>
+          </thead>
+          <tbody>
+            {
+              c.product.sizes.map(([grade, weight, use]) => (
+                <tr>
+                  <th scope="row">{grade}</th>
+                  <td class="num">{weight}</td>
+                  <td>{use}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="quality-grid">
+        <div data-reveal>
+          <h3 class="sub-title">{c.product.qualityTitle}</h3>
+          <ul class="ticks">
+            {c.product.quality.map((q) => <li>{q}</li>)}
+          </ul>
+        </div>
+        <p class="note-box" data-reveal>{c.product.custom}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- KEMASAN -->
+  <section id="kemasan" class="section section-deep" data-surface="deep">
+    <div class="shell packing-grid">
+      <div class="packing-photos" data-reveal>
+        <figure class="photo">
+          <Image src={photo('kemasan-pe')} alt={alt('Bandeng beku dalam kantong PE per ekor', 'Frozen milkfish in individual PE bags')} widths={[620]} />
+        </figure>
+        <figure class="photo">
+          <Image src={photo('kemasan-pe-tangan')} alt={alt('Satu bandeng beku dalam kantong PE', 'A single frozen milkfish in its PE bag')} widths={[620]} />
+        </figure>
+      </div>
+
+      <div data-reveal>
+        <p class="eyebrow">{c.packing.eyebrow}</p>
+        <h2 class="section-title">{c.packing.title}</h2>
+        <p class="section-lead">{c.packing.lead}</p>
+        <ul class="ticks ticks-deep">
+          {c.packing.points.map((p) => <li>{p}</li>)}
+        </ul>
+
+        <p class="cartons-title">{c.packing.cartonTitle}</p>
+        <ul class="cartons">
+          {
+            c.packing.cartons.map((kg) => (
+              <li>
+                <span class="carton-value num">{kg}</span>
+                <span class="carton-unit">{c.packing.cartonUnit}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="cartons-note">{c.packing.cartonNote}</p>
+        <p class="cartons-note">{c.packing.tailor}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROSES -->
+  <section id="proses" class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.process.eyebrow}</p>
+        <h2 class="section-title">{c.process.title}</h2>
+      </div>
+
+      <ol class="steps">
+        {
+          c.process.steps.map((s, i) => (
+            <li class="step" data-reveal data-reveal-group="proses">
+              <span class="step-num num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="step-name">{s.name}</span>
+              <span class="step-desc">{s.desc}</span>
+            </li>
+          ))
+        }
+      </ol>
+
+      <dl class="qc" data-reveal>
+        {
+          c.process.qc.map((q) => (
+            <div>
+              <dt>{q.k}</dt>
+              <dd>{q.v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="fine" data-reveal>{c.process.note}</p>
+
+      <div class="process-media" data-reveal>
+        <figure class="photo">
+          <Image src={photo('grading-500-800')} alt={alt('Bandeng segar saat grading ukuran', 'Fresh milkfish during size grading')} widths={[620]} />
+        </figure>
+        <figure class="photo">
+          <Image src={photo('karton-beku')} alt={alt('Bandeng beku tersusun dalam karton', 'Frozen milkfish arranged in a carton')} widths={[620]} />
+        </figure>
+        <figure class="photo">
+          <Image src={photo('cold-storage-gudang')} alt={alt('Karton tersimpan di cold storage', 'Cartons held in cold storage')} widths={[620]} />
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- PENGIRIMAN -->
+  <section id="pengiriman" class="section section-tint">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.shipping.eyebrow}</p>
+        <h2 class="section-title">{c.shipping.title}</h2>
+        <p class="section-lead">{c.shipping.lead}</p>
+      </div>
+
+      <ol class="scale">
+        {
+          c.shipping.scale.map((s, i) => (
+            <li data-reveal data-reveal-group="skala">
+              <span class="scale-num num">{i + 1}</span>
+              <span class="scale-name">{s.name}</span>
+              <span class="scale-desc">{s.desc}</span>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="table-scroll" data-reveal>
+        <table class="data-table">
+          <thead>
+            <tr>{c.shipping.containerHeaders.map((h) => <th scope="col">{h}</th>)}</tr>
+          </thead>
+          <tbody>
+            {
+              c.shipping.containers.map(([type, use, load]) => (
+                <tr>
+                  <th scope="row">{type}</th>
+                  <td>{use}</td>
+                  <td>{load}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="export-grid">
+        <div data-reveal>
+          <h3 class="sub-title">{c.shipping.termsTitle}</h3>
+          <dl class="terms">
+            {
+              c.shipping.terms.map((t) => (
+                <div>
+                  <dt>{t.name}</dt>
+                  <dd>{t.desc}</dd>
+                </div>
+              ))
+            }
+          </dl>
+
+          <h3 class="sub-title">{c.shipping.docsTitle}</h3>
+          <ul class="ticks">
+            {c.shipping.docs.map((d) => <li>{d}</li>)}
+          </ul>
+          <p class="fine">{c.shipping.docsNote}</p>
+        </div>
+
+        <div data-reveal>
+          <figure class="photo export-photo">
+            <Image src={photo('karton-ekspor')} alt={alt('Karton bertuliskan Product of Indonesia', 'Cartons marked Product of Indonesia')} widths={[620]} />
+          </figure>
+          <p class="cartons-title">{c.shipping.segmentsTitle}</p>
+          <ul class="chips">
+            {c.shipping.segments.map((s) => <li>{s}</li>)}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PENAWARAN -->
+  <section id="penawaran" class="section">
+    <div class="shell quote-grid">
+      <div data-reveal>
+        <p class="eyebrow">{c.quote.eyebrow}</p>
+        <h2 class="section-title">{c.quote.title}</h2>
+        <p class="section-lead">{c.quote.lead}</p>
+        <p class="contact-person">{c.quote.contactPerson}</p>
+
+        <div class="quote-actions">
+          <a class="btn btn-primary" href={waLink(contact.wa, c.waMessage)} target="_blank" rel="noopener">
+            {c.quote.waCta} · {contact.waLabel}
+          </a>
+          <a class="btn btn-ghost" href={`mailto:${contact.email}`}>{c.quote.emailCta}</a>
+        </div>
+      </div>
+
+      <ol class="checklist" data-reveal>
+        {c.quote.checklist.map((item, i) => (
+          <li>
+            <span class="checklist-num num">{i + 1}</span>
+            {item}
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section section-tint">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{c.faq.eyebrow}</p>
+        <h2 class="section-title">{c.faq.title}</h2>
+      </div>
+
+      <div class="faq">
+        {
+          c.faq.items.map((item) => (
+            <details class="faq-item" data-reveal data-reveal-group="faq">
+              <summary>
+                <span>{item.q}</span>
+                <span class="faq-mark" aria-hidden="true" />
+              </summary>
+              <p>{item.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---------- HERO ---------- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    margin-top: -4.5rem;
+    padding-top: 4.5rem;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-bg :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.5) saturate(0.6);
+  }
+
+  /* Gelap merata di kiri tempat teks berada, menipis ke kanan supaya sisik
+     perak tetap terlihat. */
+  .hero-shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        100deg,
+        color-mix(in srgb, var(--color-deep) 94%, transparent) 0%,
+        color-mix(in srgb, var(--color-deep) 78%, transparent) 50%,
+        color-mix(in srgb, var(--color-deep) 45%, transparent) 100%
+      ),
+      linear-gradient(to top, var(--color-deep) 0%, transparent 35%);
+  }
+
+  .hero-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3.5rem;
+    min-height: calc(100svh - var(--frame-h) - 4.5rem);
+    padding-block: clamp(3rem, 8vw, 6rem);
+  }
+
+  .hero-text {
+    max-width: 46rem;
+  }
+
+  .hero-title {
+    margin-top: 1.1rem;
+    font-size: var(--text-hero);
+    line-height: var(--text-hero--line-height);
+  }
+
+  .hero-lead {
+    margin-top: 1.5rem;
+    max-width: 46ch;
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+    color: var(--color-on-deep-muted);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .highlights {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--color-line);
+    border: 1px solid var(--color-line);
+  }
+
+  .highlight {
+    padding: 1.35rem 1.25rem;
+    background: color-mix(in srgb, var(--color-deep) 72%, transparent);
+    backdrop-filter: blur(10px);
+  }
+
+  .highlight-value {
+    font-size: clamp(1.45rem, 1.15rem + 1.2vw, 2.1rem);
+    line-height: 1.05;
+    color: var(--color-on-deep);
+  }
+
+  .highlight-unit {
+    display: block;
+    margin-top: 0.45rem;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .highlight-label {
+    margin-top: 0.45rem;
+    font-size: 0.8rem;
+    color: var(--color-on-deep-muted);
+  }
+
+  /* ---------- SECTION UMUM ---------- */
+  .section {
+    padding-block: clamp(4rem, 9vw, 7.5rem);
+  }
+
+  .section-deep {
+    background: var(--color-deep);
+  }
+
+  .section-tint {
+    background: color-mix(in srgb, var(--color-accent) 16%, var(--color-paper));
+  }
+
+  .section-head {
+    max-width: 46rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .section-title {
+    margin-top: 0.9rem;
+    font-size: var(--text-display);
+    line-height: var(--text-display--line-height);
+  }
+
+  .section-lead {
+    margin-top: 1.25rem;
+    font-size: var(--text-lead);
+    line-height: var(--text-lead--line-height);
+    color: var(--color-muted);
+  }
+
+  [data-surface='deep'] .section-lead {
+    color: var(--color-on-deep-muted);
+  }
+
+  /* Aksen perak terlalu pucat untuk teks kecil di latar terang,
+     jadi di permukaan terang label memakai emas brand. */
+  .section:not([data-surface='deep']) .eyebrow {
+    color: var(--color-second);
+  }
+
+  .sub-title {
+    margin-top: 3.5rem;
+    margin-bottom: 1.25rem;
+    font-size: var(--text-title);
+    line-height: var(--text-title--line-height);
+  }
+
+  .fine {
+    margin-top: 1.25rem;
+    max-width: 68ch;
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: var(--color-muted);
+  }
+
+  /* ---------- TABEL ---------- */
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    text-align: left;
+    vertical-align: top;
+    padding: 1rem 1.25rem 1rem 0;
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .data-table thead th {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-second);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 25%, transparent);
+  }
+
+  .data-table tbody th {
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .data-table td {
+    color: var(--color-muted);
+  }
+
+  .size-table td.num {
+    color: var(--color-ink);
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  /* ---------- PRODUK ---------- */
+  .split {
+    display: grid;
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  .split-photo {
+    aspect-ratio: 4 / 5;
+  }
+
+  .quality-grid {
+    display: grid;
+    gap: 2rem;
+    align-items: end;
+  }
+
+  .ticks {
+    display: grid;
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .ticks li {
+    position: relative;
+    padding-block: 0.8rem;
+    padding-left: 1.4rem;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    border-bottom: 1px solid var(--color-line-soft);
+    color: var(--color-ink);
+  }
+
+  .ticks li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 1.2rem;
+    width: 6px;
+    height: 6px;
+    background: var(--color-second);
+    transform: rotate(45deg);
+  }
+
+  .ticks-deep {
+    margin-top: 2rem;
+    border-top-color: var(--color-line);
+  }
+
+  .ticks-deep li {
+    color: var(--color-on-deep);
+    border-bottom-color: var(--color-line);
+  }
+
+  .ticks-deep li::before {
+    background: var(--color-accent);
+  }
+
+  .note-box {
+    padding: 1.25rem 1.4rem;
+    border-left: 2px solid var(--color-second);
+    background: color-mix(in srgb, var(--color-accent) 22%, transparent);
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--color-ink);
+  }
+
+  /* ---------- KEMASAN ---------- */
+  .packing-grid {
+    display: grid;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .packing-photos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .packing-photos .photo {
+    aspect-ratio: 4 / 5;
+  }
+
+  .packing-photos .photo:last-child {
+    margin-top: 3rem;
+  }
+
+  .cartons-title {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  [data-surface='deep'] .cartons-title {
+    color: var(--color-accent);
+  }
+
+  .section-tint .cartons-title {
+    color: var(--color-second);
+  }
+
+  .cartons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--color-line);
+    border: 1px solid var(--color-line);
+  }
+
+  .cartons li {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 1.1rem 0.5rem;
+    background: var(--color-deep-2);
+  }
+
+  .carton-value {
+    font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.2rem);
+    color: var(--color-on-deep);
+  }
+
+  .carton-unit {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .cartons-note {
+    margin-top: 0.9rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--color-on-deep-muted);
+  }
+
+  /* ---------- PROSES ---------- */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 1px;
+    background: var(--color-line-soft);
+    border: 1px solid var(--color-line-soft);
+  }
+
+  .step {
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+    padding: 1.5rem 1.25rem;
+    background: var(--color-paper);
+  }
+
+  .step-num {
+    font-size: 1.5rem;
+    color: var(--color-second);
+  }
+
+  .step-name {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--color-ink);
+  }
+
+  .step-desc {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+  }
+
+  .qc {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    gap: 1px;
+    margin-top: 2rem;
+    background: var(--color-deep-3);
+    border: 1px solid var(--color-deep-3);
+  }
+
+  .qc > div {
+    padding: 1.1rem 1.25rem;
+    background: var(--color-deep);
+  }
+
+  .qc dt {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .qc dd {
+    margin-top: 0.35rem;
+    font-size: 0.92rem;
+    color: var(--color-on-deep);
+  }
+
+  .process-media {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+
+  .process-media .photo {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* ---------- PENGIRIMAN ---------- */
+  .scale {
+    display: grid;
+    gap: 1px;
+    margin-bottom: 2.5rem;
+    background: var(--color-line-soft);
+    border: 1px solid var(--color-line-soft);
+  }
+
+  .scale li {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1.5rem 1.4rem;
+    background: var(--color-paper-2);
+  }
+
+  .scale-num {
+    font-size: 1.4rem;
+    color: var(--color-second);
+  }
+
+  .scale-name {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    color: var(--color-ink);
+  }
+
+  .scale-desc {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+  }
+
+  .export-grid {
+    display: grid;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .terms {
+    display: grid;
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .terms > div {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    gap: 1rem;
+    padding-block: 0.9rem;
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .terms dt {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .terms dd {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+  }
+
+  .export-photo {
+    aspect-ratio: 4 / 5;
+    margin-top: 3.5rem;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .chips li {
+    padding: 0.45rem 0.9rem;
+    border: 1px solid color-mix(in srgb, var(--color-ink) 18%, transparent);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    color: var(--color-ink);
+    background: var(--color-paper-2);
+  }
+
+  /* ---------- PENAWARAN ---------- */
+  .quote-grid {
+    display: grid;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .contact-person {
+    margin-top: 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .quote-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  /* Tombol utama di permukaan terang: aksen pastel terlalu pucat untuk
+     dibaca sebagai tombol, jadi pakai warna gelap divisi. */
+  .quote-actions .btn-primary {
+    background: var(--color-deep);
+    color: var(--color-on-deep);
+  }
+
+  .quote-actions .btn-primary:hover {
+    background: var(--color-deep-3);
+  }
+
+  .checklist {
+    display: grid;
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding-block: 1.1rem;
+    border-bottom: 1px solid var(--color-line-soft);
+    font-size: 0.98rem;
+    color: var(--color-ink);
+  }
+
+  .checklist-num {
+    flex: none;
+    font-size: 0.95rem;
+    color: var(--color-second);
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq {
+    border-top: 1px solid var(--color-line-soft);
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--color-line-soft);
+  }
+
+  .faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.35rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--color-ink);
+  }
+
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-mark {
+    flex: none;
+    position: relative;
+    width: 14px;
+    height: 14px;
+  }
+
+  .faq-mark::before,
+  .faq-mark::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto 0;
+    height: 1.5px;
+    background: var(--color-second);
+    transition: transform 0.3s var(--ease-out-soft);
+  }
+
+  .faq-mark::after {
+    transform: rotate(90deg);
+  }
+
+  .faq-item[open] .faq-mark::after {
+    transform: rotate(0deg);
+  }
+
+  .faq-item p {
+    padding-bottom: 1.5rem;
+    max-width: 62ch;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+  }
+
+  /* ---------- RESPONSIF ---------- */
+  /* Delapan tahap dibagi rata 4 + 4, bukan 5 + 3 dengan sel kosong. */
+  @media (min-width: 640px) {
+    .steps {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .steps {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (min-width: 760px) {
+    .hero-inner {
+      gap: 4rem;
+    }
+
+    .highlights {
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 58rem;
+    }
+
+    .split {
+      grid-template-columns: 1.4fr 1fr;
+      gap: 4rem;
+    }
+
+    .quality-grid {
+      grid-template-columns: 1.4fr 1fr;
+      gap: 4rem;
+    }
+
+    .packing-grid {
+      grid-template-columns: 1fr 1.1fr;
+      gap: 4.5rem;
+    }
+
+    .process-media {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .scale {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .export-grid {
+      grid-template-columns: 1.3fr 1fr;
+      gap: 4rem;
+    }
+
+    .quote-grid {
+      grid-template-columns: 1.15fr 1fr;
+      gap: 4rem;
+    }
+  }
+</style>

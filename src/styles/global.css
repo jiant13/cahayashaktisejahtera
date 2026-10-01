@@ -102,6 +102,44 @@
   --color-line-soft: rgb(28 23 25 / 0.1);
 }
 
+/* Milkfish — teal laut dangkal dengan aksen perak kehijauan, mengikuti
+   sisik bandeng. Emas brand jadi warna sekunder. */
+[data-brand='milkfish'] {
+  --color-deep: #10262b;
+  --color-deep-2: #173238;
+  --color-deep-3: #204048;
+  --color-accent: #b7d3cb;
+  --color-accent-soft: #dcebe6;
+  --color-second: #c8a04c;
+  --color-paper: #f0f4f3;
+  --color-paper-2: #ffffff;
+  --color-ink: #142427;
+  --color-muted: #5b6d6f;
+  --color-on-deep: #edf4f2;
+  --color-on-deep-muted: #a2b8b5;
+  --color-line: rgb(183 211 203 / 0.28);
+  --color-line-soft: rgb(20 36 39 / 0.1);
+}
+
+/* Squid & octopus — laut dalam. Indigo tinta cumi dengan aksen lilac
+   pastel. Tanpa foto produk, jadi warna yang membawa suasananya. */
+[data-brand='squidoctopus'] {
+  --color-deep: #16142a;
+  --color-deep-2: #201d39;
+  --color-deep-3: #2b2749;
+  --color-accent: #c6b8ec;
+  --color-accent-soft: #e4dcf7;
+  --color-second: #c8a04c;
+  --color-paper: #f4f2f8;
+  --color-paper-2: #ffffff;
+  --color-ink: #1d1a2e;
+  --color-muted: #676379;
+  --color-on-deep: #f1eff8;
+  --color-on-deep-muted: #b1abc8;
+  --color-line: rgb(198 184 236 / 0.3);
+  --color-line-soft: rgb(29 26 46 / 0.1);
+}
+
 /* Reflexology — sage lembut dengan mawar berdebu dan krem hangat.
    Paling feminin dari ketiganya, sesuai arahan. */
 [data-brand='spa'] {

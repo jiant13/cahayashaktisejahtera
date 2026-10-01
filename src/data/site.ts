@@ -6,7 +6,7 @@
  */
 
 export type Locale = 'id' | 'en';
-export type BrandKey = 'induk' | 'shrimp' | 'charcoal' | 'spa';
+export type BrandKey = 'induk' | 'shrimp' | 'charcoal' | 'spa' | 'milkfish' | 'squidoctopus';
 
 export const LOCALES: Locale[] = ['id', 'en'];
 export const DEFAULT_LOCALE: Locale = 'id';
@@ -62,6 +62,18 @@ export const CONTACT = {
     waLabel: '+62 857-1824-5650',
     email: 'admin@cahayashaktisejahtera.com',
   },
+  // Dua divisi seafood memakai nomor yang terdaftar di Google Business Profile.
+  // Dokumen sumbernya masih berisi placeholder "[Company Number]".
+  milkfish: {
+    wa: '6285923500089',
+    waLabel: '+62 859-2350-0089',
+    email: 'admin@cahayashaktisejahtera.com',
+  },
+  squidoctopus: {
+    wa: '6285923500089',
+    waLabel: '+62 859-2350-0089',
+    email: 'admin@cahayashaktisejahtera.com',
+  },
   spa: {
     wa: '6285808592005',
     waLabel: '+62 858-0859-2005',
@@ -70,7 +82,7 @@ export const CONTACT = {
 } as const;
 
 /**
- * Empat route. Urutan ini dipakai di footer dan di kartu halaman induk.
+ * Enam route. Urutan ini dipakai di footer dan di kartu halaman induk.
  * Slug sengaja tidak di-lokalisasi — klien sudah menyebut URL-nya secara spesifik.
  */
 export const BRANDS = [
@@ -96,6 +108,30 @@ export const BRANDS = [
     tagline: {
       id: 'Tambak sendiri, dari benur sampai kontainer',
       en: 'Own ponds, from hatchery to container',
+    },
+  },
+  {
+    key: 'milkfish' as const,
+    slug: 'milkfish',
+    theme: 'milkfish',
+    favicon: '/favicon/milkfish.png',
+    name: { id: 'Cahaya Milkfish', en: 'Cahaya Milkfish' },
+    short: { id: 'Bandeng Beku', en: 'Frozen Milkfish' },
+    tagline: {
+      id: 'Bandeng utuh beku, dikemas per ekor',
+      en: 'Frozen whole milkfish, packed per piece',
+    },
+  },
+  {
+    key: 'squidoctopus' as const,
+    slug: 'squidoctopus',
+    theme: 'squidoctopus',
+    favicon: '/favicon/squidoctopus.png',
+    name: { id: 'Cahaya Squid & Octopus', en: 'Cahaya Squid & Octopus' },
+    short: { id: 'Cumi & Gurita Beku', en: 'Frozen Squid & Octopus' },
+    tagline: {
+      id: 'Dari utuh sampai potongan siap olah',
+      en: 'From whole round to ready-to-cook cuts',
     },
   },
   {
