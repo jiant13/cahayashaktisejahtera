@@ -1,7 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Logo from '../Logo.astro';
-import { BRANDS, CONTACT, SITE, getBrand, localePath, waLink, type Locale } from '../../data/site';
+import { BRANDS, CONTACT, SITE, getBrand, localePath, waLink, type BrandKey, type Locale } from '../../data/site';
 import { induk } from '../../data/pages/induk';
 
 interface Props {
@@ -13,6 +14,20 @@ const c = induk(locale);
 const brand = getBrand('induk');
 const contact = CONTACT.induk;
 const divisions = BRANDS.filter((b) => b.key !== 'induk');
+
+// Satu foto per kartu divisi, diambil dari aset halaman divisinya sendiri.
+const photos = import.meta.glob<{ default: ImageMetadata }>('../../assets/photos/*/*.jpg', { eager: true });
+const CARD_PHOTO: Partial<Record<BrandKey, string>> = {
+  shrimp: 'udang/windu-panen',
+  milkfish: 'milkfish/segar-tumpukan',
+  squidoctopus: 'squidoctopus/gurita-tentakel',
+  charcoal: 'charcoal/bara-besar',
+  spa: 'spa/hero',
+};
+const cardPhoto = (key: BrandKey) => {
+  const path = CARD_PHOTO[key];
+  return path ? photos[`../../assets/photos/${path}.jpg`]?.default : undefined;
+};
 
 const schema = {
   '@context': 'https://schema.org',
@@ -102,6 +117,11 @@ const schema = {
         {
           divisions.map((d) => (
             <a class="division" href={localePath(locale, d.slug)} data-brand={d.theme} data-reveal data-reveal-group="divisi">
+              {cardPhoto(d.key) && (
+                <span class="division-photo" aria-hidden="true">
+                  <Image src={cardPhoto(d.key)!} alt="" widths={[640]} sizes="(min-width: 760px) 40vw, 100vw" />
+                </span>
+              )}
               <span class="division-mark">
                 <Logo variant="mark" height={40} />
               </span>
@@ -336,6 +356,9 @@ const schema = {
   /* Tiap kartu memakai palet divisinya sendiri — pratinjau kecil dari
      halaman yang akan dibuka. */
   .division {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
     display: flex;
     flex-direction: column;
     gap: 1.75rem;
@@ -349,10 +372,50 @@ const schema = {
       background-color 0.4s var(--ease-out-soft);
   }
 
+  /* Di HP kartu diberi tinggi minimum supaya fotonya sempat terlihat
+     di atas teks. */
+  .division {
+    min-height: 19rem;
+  }
+
   .division:hover {
     transform: translateY(-4px);
     border-color: var(--color-accent);
     background: var(--color-deep-3);
+  }
+
+  /* Foto di belakang kartu: diredam ke palet divisinya, dengan gradasi
+     pekat di bagian bawah supaya teks tetap terbaca. */
+  .division-photo {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .division-photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.55) brightness(0.7);
+    transform: scale(1.02);
+    transition: transform 0.8s var(--ease-out-soft);
+  }
+
+  .division-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      var(--color-deep-2) 0%,
+      color-mix(in srgb, var(--color-deep-2) 85%, transparent) 32%,
+      color-mix(in srgb, var(--color-deep-2) 35%, transparent) 100%
+    );
+    transition: opacity 0.4s var(--ease-out-soft);
+  }
+
+  .division:hover .division-photo :global(img) {
+    transform: scale(1.07);
   }
 
   .division-mark {
