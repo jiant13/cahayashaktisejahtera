@@ -28,6 +28,8 @@ interface Props {
 const { brand, locale, slug, title, description, links, contact, waMessage, schema } = Astro.props;
 
 const canonical = new URL(localePath(locale, slug), SITE.url).href;
+// Dibuat oleh scripts/generate-og.py, satu per divisi per bahasa.
+const ogImage = new URL(`/og/${brand.key}-${locale}.jpg`, SITE.url).href;
 const waHref = waLink(contact.wa, waMessage);
 ---
 
@@ -57,7 +59,15 @@ const waHref = waLink(contact.wa, waMessage);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={locale === 'id' ? 'id_ID' : 'en_US'} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
 
     <meta name="theme-color" content="#0b1a2e" />
 
