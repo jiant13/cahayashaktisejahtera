@@ -12,8 +12,11 @@
  *  Ukuran yang di dokumen tertulis berbeda antara dua tabel (squid tube,
  *  whole cleaned squid) diambil rentang yang paling lebar.
  *
- *  Belum ada foto produk yang bisa dipakai: foto cumi yang tersedia memakai
- *  watermark pihak lain, dan sumber foto gurita tidak jelas.
+ *  Foto (kiriman owner 4 Okt 2026) di src/assets/photos/squidoctopus. Foto
+ *  "squid" memperlihatkan sotong (cuttlefish), jadi baris nama ilmiah cumi
+ *  tidak lagi menyebut Loligo sampai jenis produknya dipastikan. Dua foto awal
+ *  (squid.png ber-watermark pihak lain, octopus.png sumber tidak jelas) tetap
+ *  tidak dipakai.
  */
 
 import type { Locale } from '../site';
@@ -64,7 +67,7 @@ export const SQUIDOCTOPUS = {
     squid: {
       eyebrow: 'Cumi-cumi Beku',
       title: 'Lima bentuk, dari utuh sampai siap masak.',
-      latin: 'Loligo spp. dan spesies sejenis, dikonfirmasi per lot',
+      latin: 'Spesies dikonfirmasi per lot',
       lead: 'Dipakai luas untuk food service, ritel, grosir seafood, restoran, industri frozen food, dan pengolahan lanjutan.',
       headers: ['Produk', 'Olahan', 'Ukuran / grade', 'Pembekuan', 'Kemasan'],
       rows: [
@@ -272,7 +275,7 @@ export const SQUIDOCTOPUS = {
     squid: {
       eyebrow: 'Frozen Squid',
       title: 'Five forms, from whole round to ready-to-cook.',
-      latin: 'Loligo spp. and related species, confirmed per lot',
+      latin: 'Species confirmed per lot',
       lead: 'Widely used in food service, retail, seafood wholesale, restaurants, frozen food manufacturing, and further processing.',
       headers: ['Product', 'Processing', 'Size / grade', 'Freezing', 'Packing'],
       rows: [

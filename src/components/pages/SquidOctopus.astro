@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import { CONTACT, SITE, getBrand, waLink, type Locale } from '../../data/site';
 import { squidoctopus } from '../../data/pages/squidoctopus';
@@ -12,8 +13,15 @@ const c = squidoctopus(locale);
 const brand = getBrand('squidoctopus');
 const contact = CONTACT.squidoctopus;
 
-// Halaman ini belum punya foto produk yang layak pakai (lihat catatan di file
-// konten), jadi suasananya dibawa oleh warna dan tipografi.
+const files = import.meta.glob<{ default: ImageMetadata }>('../../assets/photos/squidoctopus/*.jpg', {
+  eager: true,
+});
+const photo = (name: string) => files[`../../assets/photos/squidoctopus/${name}.jpg`]!.default;
+
+const alt = (id: string, en: string) => (locale === 'id' ? id : en);
+
+// Foto "squid" kiriman owner memperlihatkan sotong (cuttlefish): badan lebar
+// dengan sirip mengelilingi seluruh badan. Alt text menyebutnya apa adanya.
 
 const product = (name: string, rows: readonly (readonly string[])[]) => ({
   '@type': 'Product',
@@ -47,6 +55,9 @@ const schema = {
 >
   <!-- HERO -->
   <section class="hero" data-surface="deep">
+    <div class="hero-bg" aria-hidden="true">
+      <Image src={photo('sotong-keranjang')} alt="" loading="eager" widths={[836]} />
+    </div>
     <div class="hero-depth" aria-hidden="true"></div>
 
     <div class="shell hero-inner">
@@ -133,6 +144,18 @@ const schema = {
           {c.squid.quality.map((q) => <li>{q}</li>)}
         </ul>
       </div>
+
+      <div class="photo-row" data-reveal>
+        <figure class="photo">
+          <Image src={photo('sotong-bersih-pasang')} alt={alt('Sotong utuh yang sudah dibersihkan', 'Whole cleaned cuttlefish')} widths={[620]} />
+        </figure>
+        <figure class="photo">
+          <Image src={photo('sotong-beku')} alt={alt('Sotong utuh beku', 'Frozen whole cuttlefish')} widths={[620]} />
+        </figure>
+        <figure class="photo">
+          <Image src={photo('sotong-satuan')} alt={alt('Sotong bersih di keranjang sortir', 'Cleaned cuttlefish in a sorting basket')} widths={[620]} />
+        </figure>
+      </div>
     </div>
   </section>
 
@@ -163,7 +186,12 @@ const schema = {
           </tbody>
         </table>
       </div>
-      <p class="fine" data-reveal>{c.octopus.note}</p>
+      <div class="octopus-foot">
+        <p class="fine" data-reveal>{c.octopus.note}</p>
+        <figure class="photo octopus-photo" data-reveal>
+          <Image src={photo('gurita-tentakel')} alt={alt('Gurita beku dengan tentakel tersusun rapi', 'Frozen octopus with neatly arranged tentacles')} widths={[836]} />
+        </figure>
+      </div>
     </div>
   </section>
 
@@ -239,6 +267,18 @@ const schema = {
           {c.quality.params.map((p) => <li>{p}</li>)}
         </ul>
         <p class="fine">{c.quality.docNote}</p>
+      </div>
+
+      <div class="photo-row" data-reveal>
+        <figure class="photo">
+          <Image src={photo('proses-pembersihan')} alt={alt('Pembersihan di meja proses', 'Cleaning at the processing table')} widths={[620]} />
+        </figure>
+        <figure class="photo">
+          <Image src={photo('sotong-wadah')} alt={alt('Produk ditata dalam wadah sebelum pembekuan', 'Product laid out in trays before freezing')} widths={[620]} />
+        </figure>
+        <figure class="photo">
+          <Image src={photo('sotong-beku-tangan')} alt={alt('Pemeriksaan produk beku', 'Checking frozen product')} widths={[620]} />
+        </figure>
       </div>
     </div>
   </section>
@@ -350,10 +390,28 @@ const schema = {
 
   /* Cahaya yang meredup ke arah dasar laut: terang samar di atas,
      pekat di bawah, dengan satu pendar lilac di sisi kanan. */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-bg :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.55) saturate(0.25);
+  }
+
   .hero-depth {
     position: absolute;
     inset: 0;
     background:
+      linear-gradient(
+        100deg,
+        color-mix(in srgb, var(--color-deep) 92%, transparent) 0%,
+        color-mix(in srgb, var(--color-deep) 70%, transparent) 55%,
+        color-mix(in srgb, var(--color-deep) 40%, transparent) 100%
+      ),
       radial-gradient(
         ellipse 55% 60% at 85% 30%,
         color-mix(in srgb, var(--color-accent) 22%, transparent),
@@ -364,7 +422,7 @@ const schema = {
         color-mix(in srgb, var(--color-deep-3) 90%, transparent),
         transparent 70%
       ),
-      linear-gradient(to bottom, var(--color-deep-2), var(--color-deep) 70%);
+      linear-gradient(to top, var(--color-deep) 0%, transparent 40%);
   }
 
   .hero-inner {
@@ -512,6 +570,28 @@ const schema = {
 
   [data-surface='deep'] .fine {
     color: var(--color-on-deep-muted);
+  }
+
+  /* ---------- FOTO ---------- */
+  .photo-row {
+    display: grid;
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .photo-row .photo {
+    aspect-ratio: 4 / 5;
+  }
+
+  .octopus-foot {
+    display: grid;
+    gap: 2rem;
+    align-items: end;
+    margin-top: 1rem;
+  }
+
+  .octopus-photo {
+    aspect-ratio: 16 / 10;
   }
 
   /* ---------- TENTANG ---------- */
@@ -869,6 +949,15 @@ const schema = {
     .highlights {
       grid-template-columns: repeat(4, 1fr);
       max-width: 56rem;
+    }
+
+    .photo-row {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .octopus-foot {
+      grid-template-columns: 1fr 1.2fr;
+      gap: 4rem;
     }
 
     .intro-grid {
